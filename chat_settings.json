@@ -1,0 +1,17 @@
+{
+  "chat_width": "1500",
+  "chat_height": "1050",
+  "chat_position_x": "2vw",
+  "chat_position_y": "1100",
+  "font_size": "50",
+  "message_lifetime": 900,
+  "max_messages": 50,
+  "show_avatars": true,
+  "fade_effect": true,
+  "highlight_sponsors": true,
+  "show_user_badges": true,
+  "server_port": 8080,
+  "video_url": "https://youtube.com/live/2U_9GqKhCfo?feature=share",
+  "update_interval": 1,
+  "theme": "dark-elegant"
+}

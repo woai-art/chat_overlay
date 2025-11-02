@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Chat for vMix - Premium Edition</title>
+    <style>
+        /* ======================================== 
+           БАЗОВЫЕ СТИЛИ
+           ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --chat-height: 92vh;
+            --message-padding: 12px;
+            --avatar-size: 48px;
+            --border-radius: 12px;
+            --transition-speed: 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: transparent;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #chat-container {
+            position: absolute;
+            top: 8vh;
+            left: 2vw;
+            width: 84vw;
+            height: var(--chat-height);
+            background: transparent;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 10px;
+        }
+
+        .message {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding: var(--message-padding) 16px;
+            background: rgba(0, 0, 0, 0.85);
+            border-radius: var(--border-radius);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            max-width: 100%;
+            word-wrap: break-word;
+            border-left: 4px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            transition: all var(--transition-speed) ease;
+        }
+
+        .message:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        .avatar {
+            width: var(--avatar-size);
+            height: var(--avatar-size);
+            border-radius: 50%;
+            margin-right: 16px;
+            flex-shrink: 0;
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+            object-fit: cover;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .message:hover .avatar {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
+        }
+
+        .message-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .username {
+            font-weight: bold;
+            color: #ffffff;
+            font-size: 1.3em;
+            margin-bottom: 6px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+            transition: all var(--transition-speed) ease;
+        }
+
+        .text {
+            color: #f0f0f0;
+            font-size: 1.1em;
+            line-height: 1.5;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+        }
+
+        /* ========================================
+           ВЫДЕЛЕНИЕ ОСОБЫХ ПОЛЬЗОВАТЕЛЕЙ
+           ======================================== */
+
+        /* Спонсоры */
+        .message.sponsor {
+            border-left-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.25);
+            box-shadow: 0 0 25px rgba(76, 175, 80, 0.4);
+        }
+
+        .message.sponsor .username {
+            color: #4CAF50;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+        }
+
+        .message.sponsor .avatar {
+            border-color: #4CAF50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+        }
+
+        /* Модераторы */
+        .message.moderator {
+            border-left-color: #2196F3;
+            background: rgba(33, 150, 243, 0.25);
+            box-shadow: 0 0 25px rgba(33, 150, 243, 0.4);
+        }
+
+        .message.moderator .username {
+            color: #2196F3;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+        }
+
+        .message.moderator .avatar {
+            border-color: #2196F3;
+            box-shadow: 0 0 20px rgba(33, 150, 243, 0.6);
+        }
+
+        /* Владельцы канала */
+        .message.owner {
+            border-left-color: #FFD700;
+            background: rgba(255, 215, 0, 0.25);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+
+        .message.owner .username {
+            color: #FFD700;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+        }
+
+        .message.owner .avatar {
+            border-color: #FFD700;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+        }
+
+        /* ========================================
+           КНОПКА УПРАВЛЕНИЯ ТЕМАМИ (СКРЫТА ДЛЯ VMIX)
+           ======================================== */
+        #theme-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            opacity: 0.3;
+            transition: opacity 0.3s ease;
+        }
+
+        #theme-toggle:hover {
+            opacity: 1;
+        }
+
+        #theme-toggle button {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        #theme-toggle button:hover {
+            background: rgba(0, 0, 0, 0.95);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: scale(1.05);
+        }
+
+        /* ========================================
+           ТЕМЫ
+           ======================================== */
+        
+        /* ТЕМА: БАРБИ */
+        .theme-barbie .message {
+            background: rgba(255, 105, 180, 0.3);
+            border-left-color: #ff69b4;
+        }
+        
+        .theme-barbie .username {
+            color: #ff69b4;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+        }
+
+        /* ТЕМА: КИБЕРПАНК */
+        .theme-cyberpunk .message {
+            background: rgba(0, 255, 255, 0.15);
+            border-left-color: #00ffff;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+        
+        .theme-cyberpunk .username {
+            color: #00ffff;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+            font-family: 'Courier New', monospace;
+        }
+        
+        .theme-cyberpunk .text {
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+        }
+
+        /* ТЕМА: МИНИМАЛИЗМ */
+        .theme-minimal .message {
+            background: rgba(255, 255, 255, 0.9);
+            border-left-color: #3498db;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .theme-minimal .username {
+            color: #2c3e50;
+            text-shadow: none;
+        }
+        
+        .theme-minimal .text {
+            color: #34495e;
+            text-shadow: none;
+        }
+
+        /* ТЕМА: ТЕМНАЯ ЭЛЕГАНТНОСТЬ */
+        .theme-dark-elegant .message {
+            background: rgba(139, 92, 246, 0.2);
+            border-left-color: #8b5cf6;
+        }
+        
+        .theme-dark-elegant .username {
+            color: #a78bfa;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+        }
+
+        /* ТЕМА: РЕТРО ВОЛНА */
+        .theme-retrowave {
+            background-image: 
+                linear-gradient(90deg, rgba(255, 0, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(rgba(255, 0, 255, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .theme-retrowave .message {
+            background: rgba(255, 0, 255, 0.2);
+            border-left-color: #ff00ff;
+            border: 1px solid rgba(255, 0, 255, 0.3);
+        }
+        
+        .theme-retrowave .username {
+            color: #ff00ff;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+            font-family: 'Arial Black', sans-serif;
+        }
+        
+        .theme-retrowave .text {
+            color: #00ffff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+        }
+
+        /* ========================================
+           АДАПТИВНОСТЬ
+           ======================================== */
+        @media (max-width: 768px) {
+            :root {
+                --avatar-size: 36px;
+                --message-padding: 10px;
+            }
+            
+            .username {
+                font-size: 1.1em;
+            }
+            
+            .text {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body class="theme-barbie">
+    <div id="chat-container"></div>
+
+    <!-- Кнопка переключения тем (можно убрать для vMix) -->
+    <div id="theme-toggle">
+        <button onclick="showThemeSelector()">🎨</button>
+    </div>
+
+    <script>
+        // ========================================
+        // ВСТРОЕННАЯ БАЗА ЭМОДЖИ
+        // ========================================
+        const EMOJI_MAP = {
+            // Смайлики
+            ':)': '😊', ':-)': '😊', ':(': '😢', ':-(': '😢',
+            ':D': '😄', ':-D': '😄', ':P': '😛', ':-P': '😛',
+            ';)': '😉', ';-)': '😉', ':o': '😮', ':-o': '😮',
+            ':O': '😱', ':-O': '😱', ':|': '😐', ':-|': '😐',
+            ':*': '😘', ':-*': '😘', '<3': '❤️', '</3': '💔',
+            // Популярные эмоджи
+            ':heart:': '❤️', ':fire:': '🔥', ':thumbsup:': '👍', ':thumbs_up:': '👍',
+            ':thumbsdown:': '👎', ':thumbs_down:': '👎', ':clap:': '👏', ':clapping_hands:': '👏',
+            ':wave:': '👋', ':waving_hand:': '👋', ':eyes:': '👀', ':hundred_points:': '💯',
+            ':rocket:': '🚀', ':star:': '⭐', ':crown:': '👑', ':gem:': '💎',
+            ':thinking:': '🤔', ':thinking_face:': '🤔', ':joy:': '😂', ':face_with_tears_of_joy:': '😂',
+            ':sob:': '😭', ':loudly_crying_face:': '😭', ':skull:': '💀', ':sunglasses:': '😎',
+            ':smiling_face_with_sunglasses:': '😎', ':pray:': '🙏', ':folded_hands:': '🙏',
+            ':muscle:': '💪', ':flexed_biceps:': '💪', ':ok_hand:': '👌', ':victory_hand:': '✌️',
+            // Twitch эмоджи (fallback)
+            ':pogchamp:': '😲', ':kappa:': '😏', ':pepehands:': '😢', ':monkas:': '😰',
+            ':omegalul:': '😂', ':lul:': '😂', ':ez:': '😎', ':copium:': '🤡', ':gigachad:': '💪',
+            // Животные
+            ':dog:': '🐶', ':cat:': '🐱', ':bear:': '🐻', ':panda_face:': '🐼',
+            // Другое
+            ':glowing_star:': '🌟', ':collision:': '💥', ':sweat_droplets:': '💦'
+        };
+
+        function convertEmojis(text) {
+            let result = text;
+            for (const [code, emoji] of Object.entries(EMOJI_MAP)) {
+                const escapedCode = code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                result = result.replace(new RegExp(escapedCode, 'g'), emoji);
+            }
+            return result;
+        }
+
+        // ========================================
+        // СИСТЕМА ТЕМ
+        // ========================================
+        const THEMES = {
+            'barbie': '💗 Барби',
+            'cyberpunk': '🌆 Киберпанк',
+            'minimal': '⚪ Минимализм',
+            'dark-elegant': '🖤 Темная',
+            'retrowave': '🌸 Ретро'
+        };
+
+        let currentTheme = localStorage.getItem('vmix-theme') || 'barbie';
+
+        function applyTheme(theme) {
+            Object.keys(THEMES).forEach(t => {
+                document.body.classList.remove(`theme-${t}`);
+            });
+            document.body.classList.add(`theme-${theme}`);
+            currentTheme = theme;
+            localStorage.setItem('vmix-theme', theme);
+            console.log(`🎨 Тема: ${THEMES[theme]}`);
+        }
+
+        function nextTheme() {
+            const themeKeys = Object.keys(THEMES);
+            const currentIndex = themeKeys.indexOf(currentTheme);
+            const nextIndex = (currentIndex + 1) % themeKeys.length;
+            applyTheme(themeKeys[nextIndex]);
+        }
+
+        function showThemeSelector() {
+            const existing = document.querySelector('.theme-popup');
+            if (existing) {
+                existing.remove();
+                return;
+            }
+
+            const popup = document.createElement('div');
+            popup.className = 'theme-popup';
+            popup.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, 0.95);
+                border: 2px solid #444;
+                border-radius: 15px;
+                padding: 20px;
+                z-index: 10000;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            `;
+
+            let html = '<h3 style="color: white; margin-bottom: 15px; text-align: center;">🎨 Выберите тему</h3>';
+            html += '<div style="display: grid; gap: 10px;">';
+            
+            Object.entries(THEMES).forEach(([key, name]) => {
+                const active = key === currentTheme ? 'border: 3px solid #00ff88;' : '';
+                html += `
+                    <button onclick="applyTheme('${key}'); document.querySelector('.theme-popup').remove();"
+                            style="background: #333; color: white; border: 2px solid #555; padding: 15px;
+                                   border-radius: 10px; cursor: pointer; font-size: 16px; transition: all 0.3s;
+                                   ${active}"
+                            onmouseover="this.style.background='#555'"
+                            onmouseout="this.style.background='#333'">
+                        ${name}
+                    </button>
+                `;
+            });
+
+            html += '</div>';
+            html += '<button onclick="this.parentElement.remove()" style="margin-top: 15px; width: 100%; background: #c00; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold;">Закрыть</button>';
+            
+            popup.innerHTML = html;
+            document.body.appendChild(popup);
+        }
+
+        // Горячие клавиши
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 't') {
+                e.preventDefault();
+                showThemeSelector();
+            } else if (e.ctrlKey && e.key === 'ArrowRight') {
+                e.preventDefault();
+                nextTheme();
+            }
+        });
+
+        // Применяем сохраненную тему
+        applyTheme(currentTheme);
+
+        // ========================================
+        // ОСНОВНОЙ КОД ЧАТА
+        // ========================================
+        class vMixChat {
+            constructor() {
+                this.container = document.getElementById('chat-container');
+                this.messages = new Map();
+                this.messageLifetime = 900000; // 15 минут
+                this.maxMessages = 50;
+                this.updateInterval = 1000;
+                this.shownMessageIds = new Set();
+                
+                this.loadSettings();
+                this.startUpdating();
+                this.startCleanup();
+                
+                console.log('✅ vMix Chat Premium инициализирован');
+            }
+
+            async loadSettings() {
+                try {
+                    const response = await fetch('chat_settings.json?' + Date.now());
+                    if (response.ok) {
+                        const settings = await response.json();
+                        
+                        // Основные настройки парсера
+                        this.messageLifetime = (settings.message_lifetime || 900) * 1000;
+                        this.maxMessages = settings.max_messages || 50;
+                        this.updateInterval = (settings.update_interval || 1) * 1000;
+                        
+                        // Применяем визуальные настройки из GUI
+                        this.applyVisualSettings(settings);
+                        
+                        // Применяем тему из настроек
+                        if (settings.theme && THEMES[settings.theme]) {
+                            applyTheme(settings.theme);
+                        }
+                        
+                        console.log('⚙️ Настройки загружены:', settings);
+                    }
+                } catch (error) {
+                    console.log('⚠️ Используются настройки по умолчанию');
+                }
+            }
+
+            applyVisualSettings(settings) {
+                const container = this.container;
+                
+                // Размеры и позиция чата
+                if (settings.chat_width) {
+                    const width = settings.chat_width.includes('px') || settings.chat_width.includes('vw') || settings.chat_width.includes('%') 
+                        ? settings.chat_width 
+                        : settings.chat_width + 'px';
+                    container.style.width = width;
+                    console.log(`📏 Ширина: ${width}`);
+                }
+                
+                if (settings.chat_height) {
+                    // Добавляем автоматическое определение единиц для высоты
+                    const height = settings.chat_height.includes('px') || settings.chat_height.includes('vh') || settings.chat_height.includes('%') 
+                        ? settings.chat_height 
+                        : settings.chat_height + 'px';
+                    container.style.height = height;
+                    container.style.maxHeight = height; // На случай если есть конфликты
+                    console.log(`📏 Высота: ${height}`);
+                }
+                
+                if (settings.chat_position_x) {
+                    // Добавляем автоматическое определение единиц для позиции X
+                    const posX = settings.chat_position_x.includes('px') || settings.chat_position_x.includes('vw') || settings.chat_position_x.includes('%') 
+                        ? settings.chat_position_x 
+                        : settings.chat_position_x + 'px';
+                    container.style.left = posX;
+                    console.log(`↔️ Позиция X (слева): ${posX}`);
+                }
+                
+                if (settings.chat_position_y) {
+                    // Добавляем автоматическое определение единиц для позиции Y
+                    const posY = settings.chat_position_y.includes('px') || settings.chat_position_y.includes('vh') || settings.chat_position_y.includes('%') 
+                        ? settings.chat_position_y 
+                        : settings.chat_position_y + 'px';
+                    container.style.top = posY;
+                    console.log(`↕️ Позиция Y (сверху): ${posY}`);
+                }
+                
+                // Размер шрифта
+                if (settings.font_size) {
+                    const fontSize = settings.font_size.includes('px') || settings.font_size.includes('em') || settings.font_size.includes('rem')
+                        ? settings.font_size
+                        : settings.font_size + 'px';
+                    
+                    // Применяем к именам пользователей и текстам сообщений
+                    const style = document.createElement('style');
+                    style.id = 'custom-font-size';
+                    style.textContent = `
+                        .username { font-size: ${fontSize} !important; }
+                        .text { font-size: calc(${fontSize} * 0.85) !important; }
+                    `;
+                    
+                    // Удаляем старый стиль если есть
+                    const oldStyle = document.getElementById('custom-font-size');
+                    if (oldStyle) oldStyle.remove();
+                    
+                    document.head.appendChild(style);
+                }
+                
+                // Аватары
+                if (settings.show_avatars === false) {
+                    const style = document.createElement('style');
+                    style.id = 'hide-avatars';
+                    style.textContent = '.avatar { display: none !important; }';
+                    document.head.appendChild(style);
+                } else {
+                    const oldStyle = document.getElementById('hide-avatars');
+                    if (oldStyle) oldStyle.remove();
+                }
+                
+                // Сохраняем настройки для использования в addMessageToDOM
+                this.settings = settings;
+                
+                console.log('✨ Визуальные настройки применены');
+            }
+
+            async fetchMessages() {
+                try {
+                    const response = await fetch('messages.json?' + Date.now());
+                    if (!response.ok) return;
+                    
+                    const messages = await response.json();
+                    this.updateMessages(messages);
+                } catch (error) {
+                    console.error('❌ Ошибка загрузки сообщений:', error);
+                }
+            }
+
+            updateMessages(newMessages) {
+                const currentTime = Date.now();
+                
+                // Фильтруем только новые сообщения
+                const freshMessages = newMessages.filter(msg => {
+                    const messageAge = currentTime - msg.timestamp;
+                    return messageAge < this.messageLifetime && !this.shownMessageIds.has(msg.id);
+                });
+
+                // Добавляем новые сообщения
+                freshMessages.forEach(msg => {
+                    this.messages.set(msg.id, {
+                        ...msg,
+                        addedAt: currentTime
+                    });
+                    this.shownMessageIds.add(msg.id);
+                    this.addMessageToDOM(msg);
+                });
+
+                // Очистка Set от старых ID
+                if (this.shownMessageIds.size > 1000) {
+                    const idsArray = Array.from(this.shownMessageIds);
+                    this.shownMessageIds = new Set(idsArray.slice(-500));
+                }
+
+                // Удаляем старые сообщения
+                this.cleanupOldMessages();
+            }
+
+            addMessageToDOM(message) {
+                const messageEl = document.createElement('div');
+                messageEl.className = 'message';
+                messageEl.dataset.id = message.id;
+                messageEl.dataset.addedAt = Date.now();
+
+                // Проверяем настройку выделения спонсоров
+                const highlightSponsors = this.settings?.highlight_sponsors !== false;
+                
+                // Добавляем классы для особых пользователей (если включено)
+                if (highlightSponsors) {
+                    if (message.author.is_owner) {
+                        messageEl.classList.add('owner');
+                    } else if (message.author.is_moderator) {
+                        messageEl.classList.add('moderator');
+                    } else if (message.author.is_sponsor) {
+                        messageEl.classList.add('sponsor');
+                    }
+                }
+
+                // Обрабатываем эмоджи
+                const processedText = convertEmojis(message.text);
+
+                // Проверяем настройку отображения аватаров
+                const showAvatars = this.settings?.show_avatars !== false;
+                const avatarHtml = showAvatars 
+                    ? `<img class="avatar" src="${message.author.avatar}" 
+                            onerror="if(!this.dataset.errorHandled){this.dataset.errorHandled='true';this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2248%22 height=%2248%22%3E%3Crect width=%2248%22 height=%2248%22 fill=%22%23444%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2224%22%3E👤%3C/text%3E%3C/svg%3E';}" 
+                            alt="${this.escapeHtml(message.author.name)}">`
+                    : '';
+
+                messageEl.innerHTML = `
+                    ${avatarHtml}
+                    <div class="message-content">
+                        <div class="username">${this.escapeHtml(message.author.name)}</div>
+                        <div class="text">${this.escapeHtml(processedText)}</div>
+                    </div>
+                `;
+
+                this.container.appendChild(messageEl);
+
+                // Ограничиваем количество сообщений в DOM
+                const allMessages = this.container.querySelectorAll('.message');
+                if (allMessages.length > this.maxMessages) {
+                    allMessages[0].remove();
+                }
+
+                // Прокрутка вниз
+                this.container.scrollTop = this.container.scrollHeight;
+            }
+
+            cleanupOldMessages() {
+                const currentTime = Date.now();
+                const elementsToRemove = [];
+
+                this.messages.forEach((msg, id) => {
+                    if (currentTime - msg.addedAt > this.messageLifetime) {
+                        this.messages.delete(id);
+                        const element = this.container.querySelector(`[data-id="${id}"]`);
+                        if (element) {
+                            elementsToRemove.push(element);
+                        }
+                    }
+                });
+
+                // Удаляем элементы с анимацией
+                elementsToRemove.forEach(el => {
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateX(-30px)';
+                    setTimeout(() => el.remove(), 300);
+                });
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            startUpdating() {
+                this.fetchMessages();
+                setInterval(() => this.fetchMessages(), this.updateInterval);
+            }
+
+            startCleanup() {
+                // Очистка каждые 30 секунд
+                setInterval(() => this.cleanupOldMessages(), 30000);
+            }
+        }
+
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', () => {
+            new vMixChat();
+            console.log('🎬 vMix Chat Premium готов к работе!');
+            console.log('⌨️ Горячие клавиши: Ctrl+T (темы), Ctrl+→ (следующая тема)');
+        });
+
+        // Обработка ошибок
+        window.addEventListener('error', (e) => {
+            console.error('❌ Ошибка vMix Chat:', e.error);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+# YouTube Live Chat Premium - Python Dependencies
+# Установка: pip install -r requirements.txt
+
+# Парсер чата
+pytchat>=0.5.5
+
+# HTTP запросы
+requests>=2.32.0
+
+# GUI (если нужен)
+# Tkinter идет с Python по умолчанию, дополнительных зависимостей не требуется
