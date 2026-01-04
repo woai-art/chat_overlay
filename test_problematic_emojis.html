@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест проблемных эмоджи</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .youtube-emoji {
+            width: 70px !important;
+            height: 70px !important;
+            vertical-align: middle !important;
+            margin: 0 5px !important;
+            display: inline-block !important;
+            border: 2px solid #4CAF50;
+            border-radius: 4px;
+        }
+        
+        .test-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .result {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            min-height: 80px;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Тест проблемных YouTube эмоджи</h1>
+    
+    <div class="test-section">
+        <h2>🎯 Проблемные коды:</h2>
+        <div class="info status">
+            <strong>Тестируем:</strong><br>
+            • <code>:ops:</code> → должно стать <code>:oops:</code><br>
+            • <code>:ctopus-red-waving:</code> → должно стать <code>:octopus-red-waving:</code>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📝 Ручной тест:</h2>
+        <input type="text" class="test-input" id="testInput" 
+               placeholder="Введите проблемные эмоджи..." 
+               value=":ukraine: :usa: :germany: :france: :uk: :poland: :canada: :japan: :china:">
+        <button onclick="testEmojis()" style="padding: 10px 20px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Тест</button>
+        
+        <div class="result" id="result">Результат появится здесь...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📊 Статус загрузки:</h2>
+        <div id="loadStatus" class="info status">Загружаем YouTube эмоджи...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔍 Отладочная информация:</h2>
+        <div id="debugInfo" class="info status">
+            <div>YouTube эмоджи загружены: <span id="emojiCount">0</span></div>
+            <div>Альтернативные коды добавлены: <span id="altCodes">нет</span></div>
+        </div>
+    </div>
+
+    <script>
+        // Базовые эмоджи
+        const EMOJI_MAP = {
+            // Новые эмоджи (добавлены для исправления проблем)
+            ':grey_heart:': '🩶', ':gray_heart:': '🩶',
+            ':light_blue_heart:': '🩵', ':blue_heart:': '💙',
+            ':melting_face:': '🫠', ':face_holding_back_tears:': '🥹',
+            ':goose:': '🪿', ':brown_mushroom:': '🍄',
+            ':pink_heart:': '🩷', ':rainbow_flag:': '🏳️‍🌈',
+            // Флаги государств
+            ':ukraine:': '🇺🇦', ':ua:': '🇺🇦', ':flag_ua:': '🇺🇦',
+            ':russia:': '🇷🇺', ':ru:': '🇷🇺', ':flag_ru:': '🇷🇺',
+            ':usa:': '🇺🇸', ':us:': '🇺🇸', ':flag_us:': '🇺🇸',
+            ':germany:': '🇩🇪', ':de:': '🇩🇪', ':flag_de:': '🇩🇪',
+            ':france:': '🇫🇷', ':fr:': '🇫🇷', ':flag_fr:': '🇫🇷',
+            ':uk:': '🇬🇧', ':gb:': '🇬🇧', ':flag_gb:': '🇬🇧',
+            ':poland:': '🇵🇱', ':pl:': '🇵🇱', ':flag_pl:': '🇵🇱',
+            ':canada:': '🇨🇦', ':ca:': '🇨🇦', ':flag_ca:': '🇨🇦',
+            ':japan:': '🇯🇵', ':jp:': '🇯🇵', ':flag_jp:': '🇯🇵',
+            ':china:': '🇨🇳', ':cn:': '🇨🇳', ':flag_cn:': '🇨🇳'
+        };
+        
+        // YouTube эмоджи (загружаем асинхронно)
+        let YOUTUBE_EMOJIS = {};
+        
+        // Флаги стран (загружаем асинхронно)
+        let FLAGS_DATA = {};
+        
+        // Загрузка YouTube эмоджи
+        async function loadYouTubeEmojis() {
+            try {
+                console.log('🔄 Загружаем YouTube эмоджи...');
+                const response = await fetch('youtube_emojis.json?' + Date.now());
+                
+                if (response.ok) {
+                    const text = await response.text();
+                    YOUTUBE_EMOJIS = JSON.parse(text);
+                    
+                    // Добавляем альтернативные коды для проблемных эмоджи
+                    addAlternativeEmojiCodes();
+                    
+                    console.log('✅ YouTube эмоджи загружены:', Object.keys(YOUTUBE_EMOJIS).length);
+                    updateStatus();
+                } else {
+                    console.warn('⚠️ Ошибка загрузки YouTube эмоджи:', response.status, response.statusText);
+                    document.getElementById('loadStatus').innerHTML = '❌ Ошибка загрузки YouTube эмоджи';
+                    document.getElementById('loadStatus').className = 'error status';
+                }
+            } catch (error) {
+                console.warn('⚠️ Не удалось загрузить YouTube эмоджи:', error);
+                document.getElementById('loadStatus').innerHTML = '❌ Не удалось загрузить YouTube эмоджи: ' + error.message;
+                document.getElementById('loadStatus').className = 'error status';
+            }
+        }
+        
+        // Функция для добавления альтернативных кодов эмоджи
+        function addAlternativeEmojiCodes() {
+            let addedCodes = [];
+            
+            // Исправляем проблемные коды эмоджи
+            if (YOUTUBE_EMOJIS[':oops:']) {
+                // :ops: -> :oops:
+                YOUTUBE_EMOJIS[':ops:'] = YOUTUBE_EMOJIS[':oops:'];
+                console.log('🔧 Добавлен альтернативный код: :ops: -> :oops:');
+                addedCodes.push(':ops: → :oops:');
+            }
+            
+            if (YOUTUBE_EMOJIS[':octopus-red-waving:']) {
+                // :ctopus-red-waving: -> :octopus-red-waving:
+                YOUTUBE_EMOJIS[':ctopus-red-waving:'] = YOUTUBE_EMOJIS[':octopus-red-waving:'];
+                console.log('🔧 Добавлен альтернативный код: :ctopus-red-waving: -> :octopus-red-waving:');
+                addedCodes.push(':ctopus-red-waving: → :octopus-red-waving:');
+            }
+            
+            document.getElementById('altCodes').innerHTML = addedCodes.length > 0 ? addedCodes.join('<br>') : 'нет';
+        }
+        
+        function convertEmojis(text) {
+            let result = text;
+            let replacements = 0;
+            
+            console.log('🔄 Конвертируем эмоджи в тексте:', text);
+            
+            // 1. Сначала YouTube эмоджи
+            for (const [code, emoji] of Object.entries(YOUTUBE_EMOJIS)) {
+                const escapedCode = code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp(escapedCode, 'g');
+                const matches = (result.match(regex) || []).length;
+                if (matches > 0) {
+                    console.log(`📺 Заменяем YouTube эмоджи: ${code} (${matches} раз)`);
+                    // Убираем встроенные стили из YouTube эмоджи
+                    const cleanEmoji = emoji.replace(/style="[^"]*"/g, '');
+                    result = result.replace(regex, cleanEmoji);
+                    replacements += matches;
+                }
+            }
+            
+            // 2. Затем базовые эмоджи
+            for (const [code, emoji] of Object.entries(EMOJI_MAP)) {
+                const escapedCode = code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp(escapedCode, 'g');
+                const matches = (result.match(regex) || []).length;
+                if (matches > 0) {
+                    console.log(`😊 Заменяем базовые эмоджи: ${code} (${matches} раз)`);
+                    result = result.replace(regex, emoji);
+                    replacements += matches;
+                }
+            }
+            
+            console.log(`✅ Всего заменено эмоджи: ${replacements}`);
+            return result;
+        }
+        
+        function testEmojis() {
+            const input = document.getElementById('testInput').value;
+            const result = convertEmojis(input);
+            document.getElementById('result').innerHTML = result;
+            
+            // Проверяем, сработали ли замены
+            const hasImages = result.includes('<img');
+            const status = document.createElement('div');
+            status.className = hasImages ? 'success status' : 'error status';
+            status.innerHTML = hasImages ? '✅ Эмоджи найдены и заменены!' : '❌ Эмоджи не найдены';
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.appendChild(status);
+        }
+        
+        function updateStatus() {
+            document.getElementById('loadStatus').innerHTML = '✅ YouTube эмоджи успешно загружены';
+            document.getElementById('loadStatus').className = 'success status';
+            document.getElementById('emojiCount').textContent = Object.keys(YOUTUBE_EMOJIS).length;
+            
+            // Автоматический тест
+            setTimeout(() => {
+                testEmojis();
+            }, 500);
+        }
+        
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', () => {
+            loadYouTubeEmojis();
+        });
+    </script>
+</body>
+</html>

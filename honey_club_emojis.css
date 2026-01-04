@@ -1,0 +1,68 @@
+
+/* Стили для эмоджи канала Honey Club */
+.honey-club-emoji {
+    width: 70px;
+    height: 70px;
+    vertical-align: middle;
+    margin: 0 2px;
+    border-radius: 4px;
+    display: inline-block;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.honey-club-emoji:hover {
+    transform: scale(1.3);
+    filter: brightness(1.1);
+    cursor: pointer;
+}
+
+/* Специальные эффекты для разных эмоций */
+.honey-club-emoji[alt=":angry:"] {
+    filter: hue-rotate(0deg);
+}
+
+.honey-club-emoji[alt=":love:"] {
+    filter: hue-rotate(300deg) saturate(1.2);
+}
+
+.honey-club-emoji[alt=":evil:"] {
+    filter: hue-rotate(270deg) contrast(1.1);
+}
+
+.honey-club-emoji[alt=":cute:"] {
+    filter: hue-rotate(30deg) saturate(1.1);
+}
+
+/* Анимация для особых эмоджи */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+}
+
+.honey-club-emoji[alt=":angry:"]:hover {
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+.honey-club-emoji[alt=":hello:"]:hover {
+    animation: bounce 0.6s ease-in-out;
+}
+
+/* YouTube эмоджи - увеличенные размеры */
+.youtube-emoji {
+    width: 70px !important;
+    height: 70px !important;
+    vertical-align: middle !important;
+    margin: 0 2px !important;
+    display: inline-block !important;
+    transition: transform 0.2s ease;
+}
+
+.youtube-emoji:hover {
+    transform: scale(1.2);
+}

@@ -1,0 +1,501 @@
+// =============================================================================
+// УЛУЧШЕННАЯ БАЗА ДАННЫХ ЭМОДЖИ ДЛЯ YOUTUBE LIVE CHAT
+// Многоуровневая система с поддержкой YouTube эмоджи
+// =============================================================================
+
+// Импортируем улучшенную систему эмоджи
+try {
+    // Пытаемся загрузить улучшенную версию
+    if (typeof require !== 'undefined') {
+        const enhanced = require('./emoji_database_enhanced.js');
+        if (enhanced && enhanced.convertEmojis) {
+            // Экспортируем функции из улучшенной версии
+            window.convertEmojis = enhanced.convertEmojis;
+            window.getEmojiStats = enhanced.getEmojiStats;
+            window.searchEmojis = enhanced.searchEmojis;
+            console.log('✅ Загружена улучшенная система эмоджи');
+        }
+    }
+} catch (error) {
+    console.warn('⚠️ Не удалось загрузить улучшенную систему, используем базовую версию');
+}
+
+// Основная база эмоджи (Unicode) - для совместимости
+const EMOJI_DATABASE = {
+  // Лица и эмоции
+  ':grinning_face:': '😀',
+  ':grinning_face_with_big_eyes:': '😃',
+  ':grinning_face_with_smiling_eyes:': '😄',
+  ':beaming_face_with_smiling_eyes:': '😁',
+  ':grinning_squinting_face:': '😆',
+  ':grinning_face_with_sweat:': '😅',
+  ':rolling_on_the_floor_laughing:': '🤣',
+  ':face_with_tears_of_joy:': '😂',
+  ':slightly_smiling_face:': '🙂',
+  ':upside_down_face:': '🙃',
+  ':winking_face:': '😉',
+  ':smiling_face_with_smiling_eyes:': '😊',
+  ':smiling_face_with_halo:': '😇',
+  ':smiling_face_with_hearts:': '🥰',
+  ':smiling_face_with_heart_eyes:': '😍',
+  ':star_struck:': '🤩',
+  ':face_blowing_a_kiss:': '😘',
+  ':kissing_face:': '😗',
+  ':smiling_face:': '☺️',
+  ':kissing_face_with_closed_eyes:': '😚',
+  ':kissing_face_with_smiling_eyes:': '😙',
+  ':face_savoring_food:': '😋',
+  ':face_with_tongue:': '😛',
+  ':winking_face_with_tongue:': '😜',
+  ':zany_face:': '🤪',
+  ':squinting_face_with_tongue:': '😝',
+  ':money_mouth_face:': '🤑',
+  ':hugging_face:': '🤗',
+  ':face_with_hand_over_mouth:': '🤭',
+  ':shushing_face:': '🤫',
+  ':thinking_face:': '🤔',
+  ':zipper_mouth_face:': '🤐',
+  ':face_with_raised_eyebrow:': '🤨',
+  ':neutral_face:': '😐',
+  ':expressionless_face:': '😑',
+  ':face_without_mouth:': '😶',
+  ':smirking_face:': '😏',
+  ':unamused_face:': '😒',
+  ':face_with_rolling_eyes:': '🙄',
+  ':grimacing_face:': '😬',
+  ':lying_face:': '🤥',
+  ':relieved_face:': '😌',
+  ':pensive_face:': '😔',
+  ':sleepy_face:': '😪',
+  ':drooling_face:': '🤤',
+  ':sleeping_face:': '😴',
+  ':face_with_medical_mask:': '😷',
+  ':face_with_thermometer:': '🤒',
+  ':face_with_head_bandage:': '🤕',
+  ':nauseated_face:': '🤢',
+  ':face_vomiting:': '🤮',
+  ':sneezing_face:': '🤧',
+  ':hot_face:': '🥵',
+  ':cold_face:': '🥶',
+  ':woozy_face:': '🥴',
+  ':dizzy_face:': '😵',
+  ':exploding_head:': '🤯',
+  ':cowboy_hat_face:': '🤠',
+  ':partying_face:': '🥳',
+  ':smiling_face_with_sunglasses:': '😎',
+  ':nerd_face:': '🤓',
+  ':confused_face:': '😕',
+  ':worried_face:': '😟',
+  ':slightly_frowning_face:': '🙁',
+  ':frowning_face:': '☹️',
+  ':face_with_open_mouth:': '😮',
+  ':hushed_face:': '😯',
+  ':astonished_face:': '😲',
+  ':flushed_face:': '😳',
+  ':pleading_face:': '🥺',
+  ':frowning_face_with_open_mouth:': '😦',
+  ':anguished_face:': '😧',
+  ':fearful_face:': '😨',
+  ':anxious_face_with_sweat:': '😰',
+  ':sad_but_relieved_face:': '😥',
+  ':crying_face:': '😢',
+  ':loudly_crying_face:': '😭',
+  ':face_screaming_in_fear:': '😱',
+  ':confounded_face:': '😖',
+  ':persevering_face:': '😣',
+  ':disappointed_face:': '😞',
+  ':downcast_face_with_sweat:': '😓',
+  ':weary_face:': '😩',
+  ':tired_face:': '😫',
+  ':face_with_steam_from_nose:': '😤',
+  ':pouting_face:': '😡',
+  ':angry_face:': '😠',
+  ':face_with_symbols_on_mouth:': '🤬',
+  ':smiling_face_with_horns:': '😈',
+  ':angry_face_with_horns:': '👿',
+  ':skull:': '💀',
+  ':skull_and_crossbones:': '☠️',
+
+  // Жесты и руки
+  ':thumbs_up:': '👍',
+  ':thumbs_down:': '👎',
+  ':ok_hand:': '👌',
+  ':victory_hand:': '✌️',
+  ':crossed_fingers:': '🤞',
+  ':raised_hand:': '✋',
+  ':vulcan_salute:': '🖖',
+  ':waving_hand:': '👋',
+  ':call_me_hand:': '🤙',
+  ':flexed_biceps:': '💪',
+  ':clapping_hands:': '👏',
+  ':raising_hands:': '🙌',
+  ':open_hands:': '👐',
+  ':folded_hands:': '🙏',
+  ':writing_hand:': '✍️',
+  ':nail_polish:': '💅',
+  ':selfie:': '🤳',
+
+  // Сердца и любовь
+  ':red_heart:': '❤️',
+  ':orange_heart:': '🧡',
+  ':yellow_heart:': '💛',
+  ':green_heart:': '💚',
+  ':blue_heart:': '💙',
+  ':purple_heart:': '💜',
+  ':brown_heart:': '🤎',
+  ':black_heart:': '🖤',
+  ':white_heart:': '🤍',
+  ':heart_with_arrow:': '💘',
+  ':heart_with_ribbon:': '💝',
+  ':sparkling_heart:': '💖',
+  ':growing_heart:': '💗',
+  ':beating_heart:': '💓',
+  ':revolving_hearts:': '💞',
+  ':two_hearts:': '💕',
+  ':heart_decoration:': '💟',
+  ':heart_exclamation:': '❣️',
+  ':broken_heart:': '💔',
+
+  // Животные
+  ':dog_face:': '🐶',
+  ':cat_face:': '🐱',
+  ':mouse_face:': '🐭',
+  ':hamster_face:': '🐹',
+  ':rabbit_face:': '🐰',
+  ':fox_face:': '🦊',
+  ':bear_face:': '🐻',
+  ':panda_face:': '🐼',
+  ':koala:': '🐨',
+  ':tiger_face:': '🐯',
+  ':lion:': '🦁',
+  ':cow_face:': '🐮',
+  ':pig_face:': '🐷',
+  ':frog:': '🐸',
+  ':monkey_face:': '🐵',
+  ':chicken:': '🐔',
+  ':penguin:': '🐧',
+  ':bird:': '🐦',
+  ':baby_chick:': '🐤',
+  ':hatching_chick:': '🐣',
+  ':front_facing_baby_chick:': '🐥',
+  ':duck:': '🦆',
+  ':eagle:': '🦅',
+  ':owl:': '🦉',
+  ':bat:': '🦇',
+  ':wolf:': '🐺',
+  ':boar:': '🐗',
+  ':horse_face:': '🐴',
+  ':unicorn:': '🦄',
+  ':zebra:': '🦓',
+  ':deer:': '🦌',
+  ':cow:': '🐄',
+  ':ox:': '🐂',
+  ':water_buffalo:': '🐃',
+  ':pig:': '🐷',
+  ':ram:': '🐏',
+  ':sheep:': '🐑',
+  ':goat:': '🐐',
+  ':dromedary_camel:': '🐪',
+  ':two_hump_camel:': '🐫',
+  ':llama:': '🦙',
+  ':giraffe:': '🦒',
+  ':elephant:': '🐘',
+  ':rhinoceros:': '🦏',
+  ':hippopotamus:': '🦛',
+  ':mouse:': '🐭',
+  ':rat:': '🐀',
+  ':hamster:': '🐹',
+  ':rabbit:': '🐰',
+  ':chipmunk:': '🐿️',
+  ':hedgehog:': '🦔',
+
+  // Символы и объекты
+  ':fire:': '🔥',
+  ':hundred_points:': '💯',
+  ':collision:': '💥',
+  ':sweat_droplets:': '💦',
+  ':star:': '⭐',
+  ':glowing_star:': '🌟',
+  ':dizzy:': '💫',
+  ':speech_balloon:': '💬',
+  ':thought_balloon:': '💭',
+  ':zzz:': '💤',
+  ':gem:': '💎',
+  ':crown:': '👑',
+  ':trophy:': '🏆',
+  ':medal:': '🏅',
+  ':rocket:': '🚀',
+  ':bomb:': '💣',
+  ':money_bag:': '💰',
+  ':dollar_banknote:': '💵',
+  ':euro_banknote:': '💶',
+  ':pound_banknote:': '💷',
+  ':yen_banknote:': '💴',
+  ':credit_card:': '💳',
+  ':gift:': '🎁',
+  ':birthday_cake:': '🎂',
+  ':party_popper:': '🎉',
+  ':confetti_ball:': '🎊',
+  ':balloon:': '🎈',
+  ':musical_note:': '🎵',
+  ':musical_notes:': '🎶',
+  ':microphone:': '🎤',
+  ':headphone:': '🎧',
+  ':radio:': '📻',
+  ':saxophone:': '🎷',
+  ':guitar:': '🎸',
+  ':musical_keyboard:': '🎹',
+  ':trumpet:': '🎺',
+  ':violin:': '🎻',
+
+  // Еда и напитки
+  ':grapes:': '🍇',
+  ':melon:': '🍈',
+  ':watermelon:': '🍉',
+  ':tangerine:': '🍊',
+  ':lemon:': '🍋',
+  ':banana:': '🍌',
+  ':pineapple:': '🍍',
+  ':mango:': '🥭',
+  ':red_apple:': '🍎',
+  ':green_apple:': '🍏',
+  ':pear:': '🍐',
+  ':peach:': '🍑',
+  ':cherries:': '🍒',
+  ':strawberry:': '🍓',
+  ':kiwi_fruit:': '🥝',
+  ':tomato:': '🍅',
+  ':coconut:': '🥥',
+  ':avocado:': '🥑',
+  ':eggplant:': '🍆',
+  ':potato:': '🥔',
+  ':carrot:': '🥕',
+  ':corn:': '🌽',
+  ':hot_pepper:': '🌶️',
+  ':cucumber:': '🥒',
+  ':leafy_greens:': '🥬',
+  ':broccoli:': '🥦',
+  ':garlic:': '🧄',
+  ':onion:': '🧅',
+  ':mushroom:': '🍄',
+  ':peanuts:': '🥜',
+  ':chestnut:': '🌰',
+  ':bread:': '🍞',
+  ':croissant:': '🥐',
+  ':baguette_bread:': '🥖',
+  ':pretzel:': '🥨',
+  ':bagel:': '🥯',
+  ':pancakes:': '🥞',
+  ':waffle:': '🧇',
+  ':cheese_wedge:': '🧀',
+  ':meat_on_bone:': '🍖',
+  ':poultry_leg:': '🍗',
+  ':cut_of_meat:': '🥩',
+  ':bacon:': '🥓',
+  ':hamburger:': '🍔',
+  ':french_fries:': '🍟',
+  ':pizza:': '🍕',
+  ':hot_dog:': '🌭',
+  ':sandwich:': '🥪',
+  ':taco:': '🌮',
+  ':burrito:': '🌯',
+  ':stuffed_flatbread:': '🥙',
+  ':falafel:': '🧆',
+  ':egg:': '🥚',
+  ':cooking:': '🍳',
+  ':shallow_pan_of_food:': '🥘',
+  ':pot_of_food:': '🍲',
+  ':fondue:': '🫕',
+  ':bowl_with_spoon:': '🥣',
+  ':green_salad:': '🥗',
+  ':popcorn:': '🍿',
+  ':butter:': '🧈',
+  ':salt:': '🧂',
+  ':canned_food:': '🥫',
+
+  // Напитки
+  ':baby_bottle:': '🍼',
+  ':glass_of_milk:': '🥛',
+  ':hot_beverage:': '☕',
+  ':teapot:': '🫖',
+  ':teacup_without_handle:': '🍵',
+  ':sake:': '🍶',
+  ':bottle_with_popping_cork:': '🍾',
+  ':wine_glass:': '🍷',
+  ':cocktail_glass:': '🍸',
+  ':tropical_drink:': '🍹',
+  ':beer_mug:': '🍺',
+  ':clinking_beer_mugs:': '🍻',
+  ':clinking_glasses:': '🥂',
+  ':tumbler_glass:': '🥃',
+  ':cup_with_straw:': '🥤',
+  ':bubble_tea:': '🧋',
+  ':beverage_box:': '🧃',
+  ':mate:': '🧉',
+  ':ice:': '🧊',
+
+  // Простые эмотиконы (ASCII)
+  ':)': '😊',
+  ':-)': '😊',
+  ':(': '😢',
+  ':-(': '😢',
+  ':D': '😄',
+  ':-D': '😄',
+  ':P': '😛',
+  ':-P': '😛',
+  ';)': '😉',
+  ';-)': '😉',
+  ':o': '😮',
+  ':-o': '😮',
+  ':O': '😱',
+  ':-O': '😱',
+  ':|': '😐',
+  ':-|': '😐',
+  ':*': '😘',
+  ':-*': '😘',
+  '<3': '❤️',
+  '</3': '💔',
+  ':heart:': '❤️',
+  ':thumbsup:': '👍',
+  ':thumbsdown:': '👎',
+  ':clap:': '👏',
+  ':wave:': '👋',
+  ':eyes:': '👀',
+  ':100:': '💯',
+
+  // Популярные Twitch/YouTube эмоджи
+  ':pogchamp:': '😲',
+  ':kappa:': '😏',
+  ':pepehands:': '😢',
+  ':pepega:': '🤪',
+  ':5head:': '🧠',
+  ':monkas:': '😰',
+  ':omegalul:': '😂',
+  ':lul:': '😂',
+  ':ez:': '😎',
+  ':sadge:': '😢',
+  ':copium:': '🤡',
+  ':hopium:': '🙏',
+  ':gigachad:': '💪',
+  ':based:': '😎',
+  ':cringe:': '😬',
+  ':sus:': '🤔',
+  ':no_cap:': '💯',
+  ':fr:': '💯',
+  ':bussin:': '🔥',
+  ':sheesh:': '😤',
+  ':W:': '🏆',
+  ':L:': '💀',
+  ':ratio:': '📈',
+  ':cap:': '🧢',
+  ':facts:': '💯',
+  ':periodt:': '💅',
+  ':slay:': '💅',
+  ':bestie:': '👯',
+  ':queen:': '👑',
+  ':king:': '👑',
+  ':icon:': '⭐',
+  ':legend:': '🏆',
+  ':goat:': '🐐',
+  ':mood:': '😌',
+  ':vibe:': '✨',
+  ':energy:': '⚡',
+  ':aura:': '✨',
+  ':flex:': '💪',
+  ':drip:': '💧',
+  ':fire_emoji:': '🔥',
+  ':lit:': '🔥',
+  ':bet:': '💯',
+  ':say_less:': '🤐',
+  ':periodt_queen:': '💅👑',
+  ':main_character:': '⭐',
+  ':that_part:': '💯',
+  ':understood_the_assignment:': '✅',
+  ':living_for_this:': '😍',
+  ':obsessed:': '😍',
+  ':not_me:': '🙈',
+  ':the_way:': '😭',
+  ':please:': '🙏',
+  ':help:': '😭',
+  ':crying:': '😭',
+  ':dead:': '💀',
+  ':deceased:': '💀',
+  ':gone:': '💀',
+  ':sent_me:': '💀',
+  ':took_me_out:': '💀',
+  ':screaming:': '😱',
+  ':shook:': '😱',
+  ':gagged:': '😱',
+  ':wig_snatched:': '💇',
+  ':scalped:': '💇',
+  ':bald:': '👨‍🦲',
+  ':no_hair:': '👨‍🦲'
+};
+
+// Улучшенная функция для конвертации эмоджи с поддержкой YouTube эмоджи
+function convertEmojis(text, performanceMode = 'balanced') {
+  if (!text) return text;
+  
+  // Если доступна улучшенная версия, используем её
+  if (typeof window !== 'undefined' && window.convertEmojis && window.convertEmojis !== convertEmojis) {
+    return window.convertEmojis(text, performanceMode);
+  }
+  
+  // Fallback на базовую версию
+  let result = text;
+  
+  // Проходим по всем эмоджи в базе данных
+  for (const [code, emoji] of Object.entries(EMOJI_DATABASE)) {
+    // Экранируем специальные символы для регулярного выражения
+    const escapedCode = code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // Заменяем все вхождения кода на эмоджи
+    result = result.replace(new RegExp(escapedCode, 'g'), emoji);
+  }
+  
+  return result;
+}
+
+// Функция для получения статистики эмоджи
+function getEmojiStats() {
+  if (typeof window !== 'undefined' && window.getEmojiStats && window.getEmojiStats !== getEmojiStats) {
+    return window.getEmojiStats();
+  }
+  
+  return {
+    total_emojis: Object.keys(EMOJI_DATABASE).length,
+    mode: 'basic',
+    youtube_support: false
+  };
+}
+
+// Функция поиска эмоджи
+function searchEmojis(query, maxResults = 20) {
+  if (typeof window !== 'undefined' && window.searchEmojis && window.searchEmojis !== searchEmojis) {
+    return window.searchEmojis(query, maxResults);
+  }
+  
+  // Базовый поиск
+  const results = {};
+  const queryLower = query.toLowerCase();
+  let count = 0;
+  
+  for (const [code, emoji] of Object.entries(EMOJI_DATABASE)) {
+    if (code.toLowerCase().includes(queryLower) && count < maxResults) {
+      results[code] = emoji;
+      count++;
+    }
+  }
+  
+  return results;
+}
+
+// Экспорт для использования в других файлах
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { EMOJI_DATABASE, convertEmojis };
+}
+
+// Глобальные переменные для браузера
+if (typeof window !== 'undefined') {
+  window.EMOJI_DATABASE = EMOJI_DATABASE;
+  window.convertEmojis = convertEmojis;
+}

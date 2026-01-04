@@ -1,0 +1,86 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+}
+
+#chat {
+    position: fixed;
+    left: 100;
+    bottom: 1100;
+    width: 1400;
+    height: 1000;
+    max-width: 1500px;
+    min-width: 780px;
+    background: transparent;
+    color: white;
+    font-size: 2.8em;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    mask: linear-gradient(to bottom, transparent, white 20%, white);
+    background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.1) 20%, rgba(0,0,0,0.2));
+}
+
+#chat::-webkit-scrollbar {
+    display: none;
+}
+
+.message {
+    display: flex;
+    align-items: center; /* Выравнивание по центру по вертикали */
+    margin: 0.3em 0;
+    padding: 0.2em 0;
+    word-wrap: break-word;
+    line-height: 1.2;
+    animation: fadeIn 0.5s ease-in;
+    opacity: 0.95;
+}
+
+.message img {
+    display: inline;
+}
+
+.avatar {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    box-shadow: 0 0 4px rgba(0,0,0,0.5) !important; /* Меньшая тень */
+    margin-right: 8px !important; /* Меньший отступ */
+    vertical-align: middle !important;
+}
+
+.message-content {
+    display: flex;
+    flex-direction: row; /* Содержимое сообщения в строку */
+    align-items: center; /* Выравнивание по центру по вертикали */
+}
+
+.author-name {
+    font-weight: bold;
+    color: #ffdd44; /* Пример цвета, можно настроить */
+    margin-right: 0.5em; /* Отступ между именем и текстом */
+}
+
+.message-text {
+    /* Нет необходимости в margin-left, так как author-name имеет margin-right */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-20px); }
+}

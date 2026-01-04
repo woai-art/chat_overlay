@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍯 Honey Club - Персональные Эмоджи</title>
+    <link rel="stylesheet" href="honey_club_emojis.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #FFA500 0%, #FF6347 50%, #FFD700 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.8em;
+            background: linear-gradient(45deg, #FF6347, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .demo-section {
+            margin: 30px 0;
+            padding: 25px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 15px;
+            border: 2px solid rgba(255, 165, 0, 0.2);
+        }
+        
+        .demo-section h2 {
+            color: #FF6347;
+            margin-bottom: 20px;
+            font-size: 1.6em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .emoji-card {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 165, 0, 0.3);
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .emoji-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 165, 0, 0.3);
+            border-color: #FFA500;
+        }
+        
+        .emoji-preview {
+            font-size: 2em;
+            margin-bottom: 10px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .emoji-code {
+            font-family: 'Courier New', monospace;
+            background: rgba(255, 165, 0, 0.2);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #FF6347;
+            font-weight: bold;
+        }
+        
+        .emoji-name {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #666;
+            text-transform: capitalize;
+        }
+        
+        .input-group {
+            margin: 20px 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #FF6347;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255, 165, 0, 0.3);
+            border-radius: 10px;
+            background: white;
+            color: #333;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #FFA500;
+            box-shadow: 0 0 10px rgba(255, 165, 0, 0.3);
+        }
+        
+        button {
+            background: linear-gradient(45deg, #FF6347, #FFA500);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 99, 71, 0.4);
+        }
+        
+        .result {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 2px solid rgba(255, 165, 0, 0.3);
+            font-family: 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            min-height: 60px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid rgba(255, 165, 0, 0.3);
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #FF6347;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .family-name-section {
+            background: linear-gradient(45deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.2));
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 215, 0, 0.4);
+        }
+        
+        .family-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .family-suggestion {
+            background: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 2px solid rgba(255, 165, 0, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            color: #FF6347;
+        }
+        
+        .family-suggestion:hover {
+            background: #FFA500;
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .usage-info {
+            background: rgba(255, 99, 71, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #FF6347;
+            margin: 20px 0;
+        }
+        
+        .copy-button {
+            background: #28a745;
+            font-size: 14px;
+            padding: 8px 15px;
+        }
+        
+        .copy-button:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍯 Honey Club - Персональные Эмоджи</h1>
+        
+        <!-- Статистика -->
+        <div class="demo-section">
+            <h2>📊 Статистика эмоджи канала</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">15</div>
+                    <div class="stat-label">Персональных эмоджи</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3,690</div>
+                    <div class="stat-label">Всего эмоджи</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Уровней системы</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">28px</div>
+                    <div class="stat-label">Размер эмоджи</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Галерея эмоджи -->
+        <div class="demo-section">
+            <h2>🎨 Галерея персональных эмоджи</h2>
+            <div class="emoji-grid" id="emojiGrid">
+                <!-- Эмоджи будут загружены через JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Family Name -->
+        <div class="demo-section">
+            <h2>👨‍👩‍👧‍👦 Настройка Family Name</h2>
+            <div class="family-name-section">
+                <p><strong>Family Name</strong> позволяет участникам канала быстро вводить эмоджи, используя автодополнение.</p>
+                <p>Например, с family name "Hbadger" участники смогут вводить <code>:Hbadger_angry:</code> вместо <code>:angry:</code></p>
+                
+                <div class="input-group">
+                    <label>Рекомендуемые варианты Family Name:</label>
+                    <div class="family-suggestions">
+                        <div class="family-suggestion" onclick="selectFamilyName('Hbadger')">Hbadger</div>
+                        <div class="family-suggestion" onclick="selectFamilyName('HoneyClub')">HoneyClub</div>
+                        <div class="family-suggestion" onclick="selectFamilyName('HoneyBadger')">HoneyBadger</div>
+                        <div class="family-suggestion" onclick="selectFamilyName('HClub')">HClub</div>
+                        <div class="family-suggestion" onclick="selectFamilyName('Honey')">Honey</div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="familyName">Выбранный Family Name:</label>
+                    <input type="text" id="familyName" value="Hbadger" readonly>
+                    <button class="copy-button" onclick="copyFamilyName()">📋 Копировать</button>
+                </div>
+                
+                <div class="usage-info">
+                    <strong>💡 Как использовать:</strong><br>
+                    1. Скопируйте выбранный Family Name<br>
+                    2. В настройках Discord перейдите в "Badges and emoji"<br>
+                    3. Вставьте Family Name в поле "Emoji family name"<br>
+                    4. Участники смогут использовать автодополнение для ваших эмоджи
+                </div>
+            </div>
+        </div>
+        
+        <!-- Тестирование -->
+        <div class="demo-section">
+            <h2>🧪 Тестирование эмоджи</h2>
+            
+            <div class="input-group">
+                <label for="testInput">Введите текст с кодами эмоджи:</label>
+                <textarea id="testInput" rows="4" placeholder="Например: Привет :hello: Как дела? :love: Не злись :angry:">Привет :hello: Как дела? :love: Не злись :angry: Будь милым :cute: :Kaif:</textarea>
+            </div>
+            
+            <button onclick="convertText()">🔄 Конвертировать</button>
+            <button onclick="addRandomEmoji()">🎲 Добавить случайный эмоджи</button>
+            <button onclick="clearText()">🗑️ Очистить</button>
+            
+            <div class="result" id="result">Результат появится здесь...</div>
+        </div>
+        
+        <!-- Инструкции по использованию -->
+        <div class="demo-section">
+            <h2>📖 Инструкции по использованию</h2>
+            <div class="usage-info">
+                <h3>🔧 Для разработчиков:</h3>
+                <p><strong>Python:</strong></p>
+                <code>from emoji_database_enhanced import convert_emojis<br>
+                result = convert_emojis("Текст :hello: :love:", 'channel')</code>
+                
+                <p><strong>JavaScript:</strong></p>
+                <code>const result = convertEmojis("Текст :hello: :love:", 'channel');</code>
+                
+                <h3>🎨 CSS стили:</h3>
+                <p>Подключите файл <code>honey_club_emojis.css</code> для правильного отображения эмоджи.</p>
+                
+                <h3>📁 Структура файлов:</h3>
+                <p>Убедитесь, что папка <code>Emoji-Honey-Club</code> доступна по относительному пути от вашего HTML файла.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Данные эмоджи (в реальном приложении загружаются из API)
+        const honeyClubEmojis = {
+            ':angry:': { file: 'angry.png', name: 'Злой' },
+            ':shout:': { file: 'shout.png', name: 'Кричит' },
+            ':hello:': { file: 'hello.png', name: 'Привет' },
+            ':evil:': { file: 'evil.png', name: 'Злобный' },
+            ':love:': { file: 'love.png', name: 'Любовь' },
+            ':hungover:': { file: 'hungover.png', name: 'С похмелья' },
+            ':vomit:': { file: 'vomit.png', name: 'Тошнит' },
+            ':cute:': { file: 'сute.png', name: 'Милый' },
+            ':monster:': { file: 'monster.png', name: 'Монстр' },
+            ':HurryUp:': { file: 'HurryUp.png', name: 'Торопись' },
+            ':Kaif:': { file: 'Kaif.png', name: 'Кайф' },
+            ':Zlost:': { file: 'Zlost.png', name: 'Злость' },
+            ':dislike:': { file: 'dislike.png', name: 'Не нравится' },
+            ':comeon:': { file: 'comeon.png', name: 'Давай же' },
+            ':hugs:': { file: 'hugs.png', name: 'Обнимашки' }
+        };
+        
+        // Загрузка галереи эмоджи
+        function loadEmojiGrid() {
+            const grid = document.getElementById('emojiGrid');
+            
+            for (const [code, data] of Object.entries(honeyClubEmojis)) {
+                const card = document.createElement('div');
+                card.className = 'emoji-card';
+                card.onclick = () => addEmojiToInput(code);
+                
+                card.innerHTML = `
+                    <div class="emoji-preview">
+                        <img src="./Emoji-Honey-Club/${data.file}" alt="${code}" class="honey-club-emoji">
+                    </div>
+                    <div class="emoji-code">${code}</div>
+                    <div class="emoji-name">${data.name}</div>
+                `;
+                
+                grid.appendChild(card);
+            }
+        }
+        
+        // Добавление эмоджи в текст
+        function addEmojiToInput(emojiCode) {
+            const input = document.getElementById('testInput');
+            input.value += ' ' + emojiCode;
+            input.focus();
+        }
+        
+        // Конвертация текста
+        function convertText() {
+            const input = document.getElementById('testInput').value;
+            const result = document.getElementById('result');
+            
+            let convertedText = input;
+            
+            // Симуляция конвертации
+            for (const [code, data] of Object.entries(honeyClubEmojis)) {
+                const regex = new RegExp(escapeRegExp(code), 'g');
+                const imgTag = `<img src="./Emoji-Honey-Club/${data.file}" alt="${code}" class="honey-club-emoji" title="${code}">`;
+                convertedText = convertedText.replace(regex, imgTag);
+            }
+            
+            result.innerHTML = convertedText || 'Результат появится здесь...';
+        }
+        
+        // Добавление случайного эмоджи
+        function addRandomEmoji() {
+            const codes = Object.keys(honeyClubEmojis);
+            const randomCode = codes[Math.floor(Math.random() * codes.length)];
+            addEmojiToInput(randomCode);
+        }
+        
+        // Очистка текста
+        function clearText() {
+            document.getElementById('testInput').value = '';
+            document.getElementById('result').innerHTML = 'Результат появится здесь...';
+        }
+        
+        // Выбор Family Name
+        function selectFamilyName(name) {
+            document.getElementById('familyName').value = name;
+            
+            // Обновляем активную кнопку
+            document.querySelectorAll('.family-suggestion').forEach(btn => {
+                btn.style.background = 'white';
+                btn.style.color = '#FF6347';
+            });
+            
+            event.target.style.background = '#FFA500';
+            event.target.style.color = 'white';
+        }
+        
+        // Копирование Family Name
+        function copyFamilyName() {
+            const familyName = document.getElementById('familyName').value;
+            navigator.clipboard.writeText(familyName).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Скопировано!';
+                btn.style.background = '#28a745';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#28a745';
+                }, 2000);
+            });
+        }
+        
+        // Экранирование регулярных выражений
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+        
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            loadEmojiGrid();
+            
+            // Устанавливаем активную кнопку Family Name
+            document.querySelector('.family-suggestion').click();
+        });
+    </script>
+</body>
+</html>

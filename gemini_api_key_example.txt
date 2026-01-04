@@ -1,0 +1,9 @@
+# Замените YOUR_API_KEY на ваш реальный ключ от Gemini AI
+# Получить ключ можно здесь: https://makersuite.google.com/app/apikey
+# 
+# После получения ключа:
+# 1. Переименуйте этот файл в gemini_api_key.txt
+# 2. Замените строку ниже на ваш ключ
+# 3. Сохраните файл
+
+YOUR_API_KEY_HERE

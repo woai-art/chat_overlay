@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 ИИ Панель управления - LiveChat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            font-size: 2em;
+            margin-right: 15px;
+        }
+
+        .card-title {
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: auto;
+        }
+
+        .status-active { background: #4CAF50; }
+        .status-inactive { background: #f44336; }
+        .status-warning { background: #ff9800; }
+
+        .card-content {
+            line-height: 1.6;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric-value {
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ff9800, #f57c00);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+        }
+
+        .log-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .log-info { background: rgba(33, 150, 243, 0.2); }
+        .log-success { background: rgba(76, 175, 80, 0.2); }
+        .log-warning { background: rgba(255, 152, 0, 0.2); }
+        .log-error { background: rgba(244, 67, 54, 0.2); }
+
+        .poll-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .poll-question {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .poll-option {
+            background: rgba(255, 255, 255, 0.1);
+            margin: 8px 0;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .poll-option:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            transition: width 0.3s ease;
+        }
+
+        .suggestion-box {
+            background: rgba(255, 193, 7, 0.2);
+            border-left: 4px solid #FFC107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .suggestion-text {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 ИИ Панель управления</h1>
+            <p>Интерактивные функции с Gemini AI для LiveChat</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Статус ИИ -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🔧</span>
+                    <span class="card-title">Статус ИИ</span>
+                    <div class="status-indicator status-inactive" id="ai-status"></div>
+                </div>
+                <div class="card-content">
+                    <div class="metric">
+                        <span>Подключение к Gemini:</span>
+                        <span class="metric-value" id="connection-status">Отключено</span>
+                    </div>
+                    <div class="metric">
+                        <span>Запросов в минуту:</span>
+                        <span class="metric-value" id="requests-minute">0/15</span>
+                    </div>
+                    <div class="metric">
+                        <span>Запросов сегодня:</span>
+                        <span class="metric-value" id="requests-today">0/1500</span>
+                    </div>
+                    <button class="btn" onclick="initializeAI()">🚀 Инициализировать ИИ</button>
+                    <button class="btn btn-secondary" onclick="testConnection()">🔍 Тест подключения</button>
+                </div>
+            </div>
+
+            <!-- Анализ чата -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📊</span>
+                    <span class="card-title">Анализ чата</span>
+                    <div class="status-indicator status-inactive" id="analysis-status"></div>
+                </div>
+                <div class="card-content">
+                    <div class="metric">
+                        <span>Настроение:</span>
+                        <span class="metric-value" id="chat-mood">Не анализировалось</span>
+                    </div>
+                    <div class="metric">
+                        <span>Активность:</span>
+                        <span class="metric-value" id="chat-activity">Неизвестно</span>
+                    </div>
+                    <div class="metric">
+                        <span>Последний анализ:</span>
+                        <span class="metric-value" id="last-analysis">Никогда</span>
+                    </div>
+                    <button class="btn" onclick="analyzeChat()">📈 Анализировать чат</button>
+                    <button class="btn btn-secondary" onclick="toggleAutoAnalysis()">🔄 Авто-анализ</button>
+                </div>
+            </div>
+
+            <!-- Умные опросы -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📋</span>
+                    <span class="card-title">Умные опросы</span>
+                    <div class="status-indicator status-inactive" id="polls-status"></div>
+                </div>
+                <div class="card-content">
+                    <div class="metric">
+                        <span>Активных опросов:</span>
+                        <span class="metric-value" id="active-polls">0</span>
+                    </div>
+                    <div class="metric">
+                        <span>Всего создано:</span>
+                        <span class="metric-value" id="total-polls">0</span>
+                    </div>
+                    <button class="btn" onclick="createSmartPoll()">🎯 Создать опрос</button>
+                    <button class="btn btn-secondary" onclick="showPollHistory()">📜 История опросов</button>
+                </div>
+            </div>
+
+            <!-- Конкурсы -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🏆</span>
+                    <span class="card-title">Конкурсы</span>
+                    <div class="status-indicator status-inactive" id="contests-status"></div>
+                </div>
+                <div class="card-content">
+                    <div class="metric">
+                        <span>Активных конкурсов:</span>
+                        <span class="metric-value" id="active-contests">0</span>
+                    </div>
+                    <div class="metric">
+                        <span>Участников:</span>
+                        <span class="metric-value" id="contest-participants">0</span>
+                    </div>
+                    <button class="btn" onclick="startQuestionContest()">❓ Лучший вопрос</button>
+                    <button class="btn btn-secondary" onclick="startCreativeContest()">🎨 Креативный конкурс</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Предложения для стримера -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">💡</span>
+                <span class="card-title">Предложения для стримера</span>
+            </div>
+            <div class="card-content">
+                <div id="suggestions-container">
+                    <p>Предложения появятся после анализа чата...</p>
+                </div>
+                <button class="btn" onclick="generateSuggestion()">🔮 Новое предложение</button>
+            </div>
+        </div>
+
+        <!-- Текущий опрос -->
+        <div class="card" id="current-poll-card" style="display: none;">
+            <div class="card-header">
+                <span class="card-icon">📊</span>
+                <span class="card-title">Текущий опрос</span>
+            </div>
+            <div class="card-content">
+                <div id="current-poll-container"></div>
+            </div>
+        </div>
+
+        <!-- Логи -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">📝</span>
+                <span class="card-title">Логи ИИ системы</span>
+            </div>
+            <div class="card-content">
+                <div class="log-container" id="ai-logs">
+                    <div class="log-entry log-info">🤖 Система ИИ готова к инициализации</div>
+                </div>
+                <button class="btn btn-warning" onclick="clearLogs()">🗑️ Очистить логи</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Состояние системы
+        let aiInitialized = false;
+        let autoAnalysisEnabled = false;
+        let currentPoll = null;
+        let activeContests = [];
+
+        // Логирование
+        function addLog(message, type = 'info') {
+            const logsContainer = document.getElementById('ai-logs');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            const icons = {
+                info: 'ℹ️',
+                success: '✅',
+                warning: '⚠️',
+                error: '❌'
+            };
+            
+            logEntry.textContent = `${timestamp} ${icons[type]} ${message}`;
+            logsContainer.appendChild(logEntry);
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+        }
+
+        // Обновление статуса
+        function updateStatus(elementId, active) {
+            const element = document.getElementById(elementId);
+            element.className = `status-indicator ${active ? 'status-active' : 'status-inactive'}`;
+        }
+
+        // Инициализация ИИ
+        async function initializeAI() {
+            addLog('Инициализация Gemini AI...', 'info');
+            
+            try {
+                // Здесь будет реальный запрос к Python backend
+                // Пока симулируем
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                aiInitialized = true;
+                updateStatus('ai-status', true);
+                document.getElementById('connection-status').textContent = 'Подключено';
+                addLog('Gemini AI успешно инициализирован!', 'success');
+                
+            } catch (error) {
+                addLog(`Ошибка инициализации: ${error.message}`, 'error');
+            }
+        }
+
+        // Тест подключения
+        async function testConnection() {
+            if (!aiInitialized) {
+                addLog('Сначала инициализируйте ИИ', 'warning');
+                return;
+            }
+            
+            addLog('Тестирование подключения к Gemini API...', 'info');
+            
+            try {
+                // Симуляция теста
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                addLog('Подключение к Gemini API работает корректно', 'success');
+                
+                // Обновляем счетчики
+                document.getElementById('requests-minute').textContent = '1/15';
+                document.getElementById('requests-today').textContent = '1/1500';
+                
+            } catch (error) {
+                addLog(`Ошибка подключения: ${error.message}`, 'error');
+            }
+        }
+
+        // Анализ чата
+        async function analyzeChat() {
+            if (!aiInitialized) {
+                addLog('Сначала инициализируйте ИИ', 'warning');
+                return;
+            }
+            
+            addLog('Анализирую настроение чата...', 'info');
+            updateStatus('analysis-status', true);
+            
+            try {
+                // Симуляция анализа
+                await new Promise(resolve => setTimeout(resolve, 3000));
+                
+                // Случайные результаты для демо
+                const moods = ['Позитивное', 'Нейтральное', 'Веселое', 'Активное'];
+                const activities = ['Высокая', 'Средняя', 'Низкая'];
+                
+                const mood = moods[Math.floor(Math.random() * moods.length)];
+                const activity = activities[Math.floor(Math.random() * activities.length)];
+                
+                document.getElementById('chat-mood').textContent = mood;
+                document.getElementById('chat-activity').textContent = activity;
+                document.getElementById('last-analysis').textContent = new Date().toLocaleTimeString();
+                
+                addLog(`Анализ завершен: настроение ${mood}, активность ${activity}`, 'success');
+                
+                // Генерируем предложение
+                generateSuggestion();
+                
+            } catch (error) {
+                addLog(`Ошибка анализа: ${error.message}`, 'error');
+            } finally {
+                updateStatus('analysis-status', false);
+            }
+        }
+
+        // Генерация предложения
+        function generateSuggestion() {
+            const suggestions = [
+                'Спросите зрителей о их любимых играх этого года',
+                'Проведите опрос про предпочтения в жанрах игр',
+                'Расскажите интересную историю из своего опыта',
+                'Обсудите с аудиторией планы на следующие стримы',
+                'Запустите конкурс на лучший вопрос о игре'
+            ];
+            
+            const suggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+            
+            const container = document.getElementById('suggestions-container');
+            container.innerHTML = `
+                <div class="suggestion-box">
+                    <div class="suggestion-text">💡 ${suggestion}</div>
+                </div>
+            `;
+            
+            addLog(`Новое предложение: ${suggestion}`, 'info');
+        }
+
+        // Создание умного опроса
+        async function createSmartPoll() {
+            if (!aiInitialized) {
+                addLog('Сначала инициализируйте ИИ', 'warning');
+                return;
+            }
+            
+            addLog('Создаю умный опрос на основе контекста...', 'info');
+            
+            try {
+                await new Promise(resolve => setTimeout(resolve, 2500));
+                
+                // Пример опроса
+                const poll = {
+                    question: 'Какой жанр игр вам больше нравится?',
+                    options: ['RPG', 'Шутеры', 'Стратегии', 'Инди-игры'],
+                    duration: 3
+                };
+                
+                showPoll(poll);
+                
+                const currentPolls = parseInt(document.getElementById('active-polls').textContent);
+                const totalPolls = parseInt(document.getElementById('total-polls').textContent);
+                
+                document.getElementById('active-polls').textContent = currentPolls + 1;
+                document.getElementById('total-polls').textContent = totalPolls + 1;
+                
+                updateStatus('polls-status', true);
+                addLog(`Создан опрос: "${poll.question}"`, 'success');
+                
+            } catch (error) {
+                addLog(`Ошибка создания опроса: ${error.message}`, 'error');
+            }
+        }
+
+        // Отображение опроса
+        function showPoll(poll) {
+            currentPoll = poll;
+            const card = document.getElementById('current-poll-card');
+            const container = document.getElementById('current-poll-container');
+            
+            container.innerHTML = `
+                <div class="poll-container">
+                    <div class="poll-question">${poll.question}</div>
+                    ${poll.options.map((option, index) => `
+                        <div class="poll-option" onclick="votePoll(${index})">
+                            ${option}
+                        </div>
+                    `).join('')}
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <p>Длительность: ${poll.duration} минут</p>
+                </div>
+            `;
+            
+            card.style.display = 'block';
+        }
+
+        // Голосование в опросе
+        function votePoll(optionIndex) {
+            if (!currentPoll) return;
+            
+            addLog(`Голос за вариант: ${currentPoll.options[optionIndex]}`, 'info');
+        }
+
+        // Конкурс лучших вопросов
+        function startQuestionContest() {
+            if (!aiInitialized) {
+                addLog('Сначала инициализируйте ИИ', 'warning');
+                return;
+            }
+            
+            addLog('Запущен конкурс на лучший вопрос!', 'success');
+            updateStatus('contests-status', true);
+            
+            const currentContests = parseInt(document.getElementById('active-contests').textContent);
+            document.getElementById('active-contests').textContent = currentContests + 1;
+        }
+
+        // Креативный конкурс
+        function startCreativeContest() {
+            if (!aiInitialized) {
+                addLog('Сначала инициализируйте ИИ', 'warning');
+                return;
+            }
+            
+            addLog('Запущен креативный конкурс!', 'success');
+            updateStatus('contests-status', true);
+            
+            const currentContests = parseInt(document.getElementById('active-contests').textContent);
+            document.getElementById('active-contests').textContent = currentContests + 1;
+        }
+
+        // Переключение авто-анализа
+        function toggleAutoAnalysis() {
+            autoAnalysisEnabled = !autoAnalysisEnabled;
+            
+            if (autoAnalysisEnabled) {
+                addLog('Авто-анализ чата включен (каждые 5 минут)', 'success');
+                // Здесь можно запустить интервал
+            } else {
+                addLog('Авто-анализ чата отключен', 'info');
+            }
+        }
+
+        // Очистка логов
+        function clearLogs() {
+            document.getElementById('ai-logs').innerHTML = '';
+            addLog('Логи очищены', 'info');
+        }
+
+        // История опросов
+        function showPollHistory() {
+            addLog('Показана история опросов', 'info');
+            // Здесь можно открыть модальное окно с историей
+        }
+
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            addLog('ИИ панель управления загружена', 'success');
+            addLog('Для начала работы нажмите "Инициализировать ИИ"', 'info');
+        });
+    </script>
+</body>
+</html>

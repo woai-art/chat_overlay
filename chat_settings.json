@@ -1,17 +1,42 @@
 {
-  "chat_width": "1500",
-  "chat_height": "1050",
-  "chat_position_x": "2vw",
+  "chat_width": "1400",
+  "chat_height": "1000",
+  "chat_position_x": "100",
   "chat_position_y": "1100",
-  "font_size": "50",
+  "font_size": "2.8em",
   "message_lifetime": 900,
-  "max_messages": 50,
+  "max_messages": 50000,
   "show_avatars": true,
   "fade_effect": true,
   "highlight_sponsors": true,
   "show_user_badges": true,
   "server_port": 8080,
-  "video_url": "https://youtube.com/live/2U_9GqKhCfo?feature=share",
+  "video_url": "https://youtube.com/live/WLCn-APK024?feature=share",
   "update_interval": 1,
-  "theme": "dark-elegant"
+  "theme": "minimal",
+  "multichat_enabled": true,
+  "multichat_channels": [
+    {
+      "prefix": "[KM]",
+      "name": "Клуб Медоедов",
+      "url": "https://youtube.com/live/GyVXQpYTIxk?feature=share",
+      "enabled": true
+    },
+    {
+      "prefix": "[КМ_vert]",
+      "name": "Клуб Медоедов_верт",
+      "url": "https://youtube.com/live/07oJh4LXUno?feature=share",
+      "enabled": true
+    },
+    {
+      "prefix": "[С]",
+      "name": "Свободный",
+      "url": "https://www.youtube.com/live/YMN1D9GTuNI?si=Qk2oU4vKYFc1f0F1",
+      "enabled": true
+    }
+  ],
+  "performance_optimization_enabled": false,
+  "max_messages_per_channel_per_cycle": 10,
+  "message_processing_delay": 0.1,
+  "auto_performance_protection": true
 }

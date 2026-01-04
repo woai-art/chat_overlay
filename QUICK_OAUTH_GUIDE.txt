@@ -1,0 +1,80 @@
+═══════════════════════════════════════════════════════════════
+  🔐 БЫСТРАЯ НАСТРОЙКА GOOGLE OAUTH - 5 МИНУТ
+═══════════════════════════════════════════════════════════════
+
+📌 ЧТО НУЖНО СДЕЛАТЬ:
+
+1️⃣  Откройте: https://console.cloud.google.com/
+    (Войдите в свой Google аккаунт)
+
+2️⃣  Создайте проект:
+    ▶ Нажмите выпадающий список вверху
+    ▶ "НОВЫЙ ПРОЕКТ" → название: "YouTube Chat Parser"
+    ▶ "Создать"
+
+3️⃣  Включите YouTube API:
+    ▶ В поиске введите: "YouTube Data API v3"
+    ▶ Нажмите "ВКЛЮЧИТЬ"
+
+4️⃣  Настройте OAuth Consent Screen:
+    ▶ Меню → "APIs & Services" → "OAuth consent screen"
+    ▶ Выберите "External" → "CREATE"
+    ▶ Заполните:
+       - App name: YouTube Chat Parser
+       - User support email: ваш email
+       - Developer contact: ваш email
+    ▶ "SAVE AND CONTINUE"
+    
+    ▶ Scopes → "ADD OR REMOVE SCOPES":
+       ✅ YouTube Data API v3 → .../auth/youtube.readonly
+       ✅ YouTube Data API v3 → .../auth/youtube.force-ssl
+    ▶ "UPDATE" → "SAVE AND CONTINUE"
+    
+    ▶ Test users → "ADD USERS":
+       - Добавьте свой email (Gmail от YouTube)
+    ▶ "ADD" → "SAVE AND CONTINUE"
+    
+    ▶ Summary → "BACK TO DASHBOARD"
+
+5️⃣  Создайте OAuth Client ID:
+    ▶ Меню → "Credentials"
+    ▶ "+ CREATE CREDENTIALS" → "OAuth client ID"
+    ▶ Application type: "Desktop app"
+    ▶ Name: YouTube Chat Parser
+    ▶ "CREATE"
+
+6️⃣  Скачайте credentials:
+    ▶ Нажмите "DOWNLOAD JSON"
+    ▶ Сохраните как: client_secret.json
+    ▶ Поместите в папку: D:\vMix\liveChat\chat_overlay\
+
+═══════════════════════════════════════════════════════════════
+
+✅ ГОТОВО! Теперь запустите:
+   - START.bat → опция 2 (OAuth авторизация)
+   - Или AUTHORIZE_YOUTUBE.bat
+
+═══════════════════════════════════════════════════════════════
+
+❓ ЧАСТЫЕ ВОПРОСЫ:
+
+Q: Это безопасно?
+A: Да! Credentials остаются только у вас локально.
+
+Q: Это бесплатно?
+A: Да, полностью бесплатно. Карта не нужна.
+
+Q: Что делать если ошибся?
+A: Можно удалить проект и создать новый.
+
+Q: Файл должен называться именно client_secret.json?
+A: Да, точно так! И в папке D:\vMix\liveChat\chat_overlay\
+
+═══════════════════════════════════════════════════════════════
+
+🆘 ПОМОЩЬ: Если возникли проблемы, откройте файл:
+   GOOGLE_OAUTH_SETUP.md (подробная инструкция)
+
+═══════════════════════════════════════════════════════════════
+
+

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест флагов стран</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .test-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .result {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            min-height: 80px;
+            font-size: 24px;
+            line-height: 1.5;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>🏳️ Тест флагов стран</h1>
+    
+    <div class="test-section">
+        <h2>📝 Тест флагов:</h2>
+        <input type="text" class="test-input" id="testInput" 
+               placeholder="Введите коды флагов..." 
+               value=":ukraine: :usa: :germany: :france: :uk: :poland: :canada: :japan: :china: :ua: :us: :de: :fr: :gb: :pl: :ca: :jp: :cn:">
+        <button onclick="testFlags()" style="padding: 10px 20px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Тест</button>
+        
+        <div class="result" id="result">Результат появится здесь...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📊 Статус загрузки:</h2>
+        <div id="loadStatus" class="info status">Загружаем флаги...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔍 Отладочная информация:</h2>
+        <div id="debugInfo" class="info status">
+            <div>Флагов загружено: <span id="flagCount">0</span></div>
+            <div>Примеры кодов: <span id="sampleCodes">нет</span></div>
+        </div>
+    </div>
+
+    <script>
+        // Флаги стран (загружаем асинхронно)
+        let FLAGS_DATA = {};
+        
+        // Загрузка флагов стран
+        async function loadFlags() {
+            try {
+                console.log('🏳️ Загружаем флаги стран...');
+                const response = await fetch('flags_data.json?' + Date.now());
+                
+                if (response.ok) {
+                    const flagsArray = await response.json();
+                    
+                    // Преобразуем массив в объект для быстрого поиска
+                    flagsArray.forEach(flag => {
+                        const code = flag.code.toLowerCase();
+                        const emoji = flag.emoji;
+                        const name = flag.name.toLowerCase().replace(/\s+/g, '_');
+                        
+                        // Добавляем различные варианты кодов
+                        FLAGS_DATA[`:${code}:`] = emoji;
+                        FLAGS_DATA[`:flag_${code}:`] = emoji;
+                        FLAGS_DATA[`:${name}:`] = emoji;
+                        
+                        // Специальные случаи
+                        if (code === 'us') {
+                            FLAGS_DATA[':usa:'] = emoji;
+                            FLAGS_DATA[':united_states:'] = emoji;
+                        }
+                        if (code === 'gb') {
+                            FLAGS_DATA[':uk:'] = emoji;
+                            FLAGS_DATA[':united_kingdom:'] = emoji;
+                        }
+                        if (code === 'ua') {
+                            FLAGS_DATA[':ukraine:'] = emoji;
+                        }
+                        if (code === 'ru') {
+                            FLAGS_DATA[':russia:'] = emoji;
+                        }
+                        if (code === 'de') {
+                            FLAGS_DATA[':germany:'] = emoji;
+                        }
+                        if (code === 'fr') {
+                            FLAGS_DATA[':france:'] = emoji;
+                        }
+                        if (code === 'pl') {
+                            FLAGS_DATA[':poland:'] = emoji;
+                        }
+                        if (code === 'ca') {
+                            FLAGS_DATA[':canada:'] = emoji;
+                        }
+                        if (code === 'jp') {
+                            FLAGS_DATA[':japan:'] = emoji;
+                        }
+                        if (code === 'cn') {
+                            FLAGS_DATA[':china:'] = emoji;
+                        }
+                    });
+                    
+                    console.log('✅ Флаги загружены:', Object.keys(FLAGS_DATA).length, 'кодов');
+                    updateStatus();
+                } else {
+                    console.warn('⚠️ Ошибка загрузки флагов:', response.status, response.statusText);
+                    document.getElementById('loadStatus').innerHTML = '❌ Ошибка загрузки флагов';
+                    document.getElementById('loadStatus').className = 'error status';
+                }
+            } catch (error) {
+                console.warn('⚠️ Не удалось загрузить флаги:', error);
+                document.getElementById('loadStatus').innerHTML = '❌ Не удалось загрузить флаги: ' + error.message;
+                document.getElementById('loadStatus').className = 'error status';
+            }
+        }
+        
+        function convertFlags(text) {
+            let result = text;
+            let replacements = 0;
+            
+            console.log('🔄 Конвертируем флаги в тексте:', text);
+            
+            // Обрабатываем флаги стран
+            for (const [code, emoji] of Object.entries(FLAGS_DATA)) {
+                const escapedCode = code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp(escapedCode, 'g');
+                const matches = (result.match(regex) || []).length;
+                if (matches > 0) {
+                    console.log(`🏳️ Заменяем флаг: ${code} (${matches} раз)`);
+                    result = result.replace(regex, emoji);
+                    replacements += matches;
+                }
+            }
+            
+            console.log(`✅ Всего заменено флагов: ${replacements}`);
+            return result;
+        }
+        
+        function testFlags() {
+            const input = document.getElementById('testInput').value;
+            const result = convertFlags(input);
+            document.getElementById('result').innerHTML = result;
+            
+            // Проверяем, сработали ли замены
+            const hasFlags = result !== input;
+            const status = document.createElement('div');
+            status.className = hasFlags ? 'success status' : 'error status';
+            status.innerHTML = hasFlags ? '✅ Флаги найдены и заменены!' : '❌ Флаги не найдены';
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.appendChild(status);
+        }
+        
+        function updateStatus() {
+            document.getElementById('loadStatus').innerHTML = '✅ Флаги успешно загружены';
+            document.getElementById('loadStatus').className = 'success status';
+            document.getElementById('flagCount').textContent = Object.keys(FLAGS_DATA).length;
+            
+            // Показываем примеры кодов
+            const sampleCodes = Object.keys(FLAGS_DATA).slice(0, 10).join(', ');
+            document.getElementById('sampleCodes').textContent = sampleCodes;
+            
+            // Автоматический тест
+            setTimeout(() => {
+                testFlags();
+            }, 500);
+        }
+        
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFlags();
+        });
+    </script>
+</body>
+</html>

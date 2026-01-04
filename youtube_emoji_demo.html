@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Демо YouTube Эмоджи</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .demo-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .demo-section h2 {
+            color: #FFD700;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        .input-group {
+            margin: 15px 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #E0E0E0;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 10px 5px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .result {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #4ECDC4;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .youtube-emoji {
+            width: 48px;
+            height: 48px;
+            vertical-align: middle;
+            margin: 0 2px;
+            border-radius: 3px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .examples {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .example-emoji {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .example-emoji:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .mode-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .mode-btn.active {
+            background: #4ECDC4;
+            border-color: #4ECDC4;
+        }
+        
+        .performance-info {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #E0E0E0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Демо YouTube Эмоджи</h1>
+        
+        <!-- Статистика -->
+        <div class="demo-section">
+            <h2>📊 Статистика базы данных</h2>
+            <div class="stats" id="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="popularCount">161</div>
+                    <div>Популярные эмоджи</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="basicCount">1,709</div>
+                    <div>Базовые эмоджи</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="fullCount">1,705</div>
+                    <div>Полные эмоджи</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="youtubeCount">100</div>
+                    <div>YouTube эмоджи</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Режимы производительности -->
+        <div class="demo-section">
+            <h2>⚡ Режимы производительности</h2>
+            <div class="mode-selector">
+                <div class="mode-btn" data-mode="fast">🚀 Быстрый</div>
+                <div class="mode-btn active" data-mode="balanced">⚖️ Сбалансированный</div>
+                <div class="mode-btn" data-mode="complete">🔧 Полный</div>
+                <div class="mode-btn" data-mode="full">🎬 Максимальный</div>
+            </div>
+            <div class="performance-info" id="performanceInfo">
+                Сбалансированный режим: популярные + базовые эмоджи (рекомендуется)
+            </div>
+        </div>
+        
+        <!-- Тестирование эмоджи -->
+        <div class="demo-section">
+            <h2>🧪 Тестирование эмоджи</h2>
+            
+            <div class="input-group">
+                <label for="testInput">Введите текст с кодами эмоджи:</label>
+                <textarea id="testInput" rows="4" placeholder="Например: Привет :fire: :heart: :hand-pink-waving: :face-blue-smiling:">Привет :fire: :heart: :thumbsup: :hand-pink-waving: :face-blue-smiling: :trophy-yellow-smiling:</textarea>
+            </div>
+            
+            <button onclick="convertText()">🔄 Конвертировать</button>
+            <button onclick="clearResult()">🗑️ Очистить</button>
+            
+            <div class="result" id="result">Результат появится здесь...</div>
+            
+            <div class="performance-info" id="conversionTime"></div>
+        </div>
+        
+        <!-- Примеры YouTube эмоджи -->
+        <div class="demo-section">
+            <h2>🎬 Примеры YouTube эмоджи</h2>
+            <p>Нажмите на код эмоджи, чтобы добавить его в текст:</p>
+            <div class="examples" id="youtubeExamples">
+                <div class="example-emoji" onclick="addToInput(':hand-pink-waving:')">:hand-pink-waving:</div>
+                <div class="example-emoji" onclick="addToInput(':face-blue-smiling:')">:face-blue-smiling:</div>
+                <div class="example-emoji" onclick="addToInput(':face-red-droopy-eyes:')">:face-red-droopy-eyes:</div>
+                <div class="example-emoji" onclick="addToInput(':face-purple-crying:')">:face-purple-crying:</div>
+                <div class="example-emoji" onclick="addToInput(':trophy-yellow-smiling:')">:trophy-yellow-smiling:</div>
+                <div class="example-emoji" onclick="addToInput(':face-green-smiling:')">:face-green-smiling:</div>
+                <div class="example-emoji" onclick="addToInput(':face-orange-frowning:')">:face-orange-frowning:</div>
+                <div class="example-emoji" onclick="addToInput(':eyes-purple-crying:')">:eyes-purple-crying:</div>
+                <div class="example-emoji" onclick="addToInput(':face-fuchsia-wide-eyes:')">:face-fuchsia-wide-eyes:</div>
+                <div class="example-emoji" onclick="addToInput(':cat-orange-whistling:')">:cat-orange-whistling:</div>
+            </div>
+        </div>
+        
+        <!-- Поиск эмоджи -->
+        <div class="demo-section">
+            <h2>🔍 Поиск эмоджи</h2>
+            
+            <div class="input-group">
+                <label for="searchInput">Поиск по ключевому слову:</label>
+                <input type="text" id="searchInput" placeholder="Например: heart, face, hand" onkeyup="searchEmojis()">
+            </div>
+            
+            <div class="result" id="searchResult">Введите ключевое слово для поиска...</div>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'balanced';
+        
+        // Симуляция базы данных эмоджи (в реальном проекте это будет загружаться из emoji_database.js)
+        const emojiDatabase = {
+            // Популярные эмоджи
+            ':fire:': '🔥',
+            ':heart:': '❤️',
+            ':thumbsup:': '👍',
+            ':smile:': '😊',
+            ':laugh:': '😂',
+            ':love:': '😍',
+            ':star:': '⭐',
+            ':rocket:': '🚀',
+            ':crown:': '👑',
+            ':trophy:': '🏆',
+            
+            // YouTube эмоджи (симуляция)
+            ':hand-pink-waving:': '<img src="https://yt3.ggpht.com/KOxdr_z3A5h1Gb7kqnxqOCnbZrBmxI2B_tRQ453BhTWUhYAlpg5ZP8IKEBkcvRoY8grY91Q=w24-h24-c-k-nd" alt=":hand-pink-waving:" class="youtube-emoji">',
+            ':face-blue-smiling:': '<img src="https://yt3.ggpht.com/cktIaPxFwnrPwn-alHvnvedHLUJwbHi8HCK3AgbHpphrMAW99qw0bDfxuZagSY5ieE9BBrA=w24-h24-c-k-nd" alt=":face-blue-smiling:" class="youtube-emoji">',
+            ':face-red-droopy-eyes:': '<img src="https://yt3.ggpht.com/oih9s26MOYPWC_uL6tgaeOlXSGBv8MMoDrWzBt-80nEiVSL9nClgnuzUAKqkU9_TWygF6CI=w24-h24-c-k-nd" alt=":face-red-droopy-eyes:" class="youtube-emoji">',
+            ':face-purple-crying:': '<img src="https://yt3.ggpht.com/g6_km98AfdHbN43gvEuNdZ2I07MmzVpArLwEvNBwwPqpZYzszqhRzU_DXALl11TchX5_xFE=w24-h24-c-k-nd" alt=":face-purple-crying:" class="youtube-emoji">',
+            ':trophy-yellow-smiling:': '<img src="https://yt3.ggpht.com/7tf3A_D48gBg9g2N0Rm6HWs2aqzshHU4CuVubTXVxh1BP7YDBRC6pLBoC-ibvr-zCl_Lgg=w24-h24-c-k-nd" alt=":trophy-yellow-smiling:" class="youtube-emoji">',
+            ':face-green-smiling:': '<img src="https://yt3.ggpht.com/G061SAfXg2bmG1ZXbJsJzQJpN8qEf_W3f5cb5nwzBYIV58IpPf6H90lElDl85iti3HgoL3o=w24-h24-c-k-nd" alt=":face-green-smiling:" class="youtube-emoji">',
+            ':face-orange-frowning:': '<img src="https://yt3.ggpht.com/Ar8jaEIxzfiyYmB7ejDOHba2kUMdR37MHn_R39mtxqO5CD4aYGvjDFL22DW_Cka6LKzhGDk=w24-h24-c-k-nd" alt=":face-orange-frowning:" class="youtube-emoji">',
+            ':eyes-purple-crying:': '<img src="https://yt3.ggpht.com/FrYgdeZPpvXs-6Mp305ZiimWJ0wV5bcVZctaUy80mnIdwe-P8HRGYAm0OyBtVx8EB9_Dxkc=w24-h24-c-k-nd" alt=":eyes-purple-crying:" class="youtube-emoji">',
+            ':face-fuchsia-wide-eyes:': '<img src="https://yt3.ggpht.com/zdcOC1SMmyXJOAddl9DYeEFN9YYcn5mHemJCdRFQMtDuS0V-IyE-5YjNUL1tduX1zs17tQ=w24-h24-c-k-nd" alt=":face-fuchsia-wide-eyes:" class="youtube-emoji">',
+            ':cat-orange-whistling:': '<img src="https://yt3.ggpht.com/0ocqEmuhrKCK87_J21lBkvjW70wRGC32-Buwk6TP4352CgcNjL6ug8zcsel6JiPbE58xhq5g=w24-h24-c-k-nd" alt=":cat-orange-whistling:" class="youtube-emoji">'
+        };
+        
+        // Информация о режимах
+        const modeInfo = {
+            'fast': 'Быстрый режим: только популярные эмоджи (~161) - максимальная скорость',
+            'balanced': 'Сбалансированный режим: популярные + базовые эмоджи (~1,870) - рекомендуется',
+            'complete': 'Полный режим: все эмоджи кроме YouTube (~3,575) - полная поддержка Unicode',
+            'full': 'Максимальный режим: все эмоджи включая YouTube (~3,675) - максимальная функциональность'
+        };
+        
+        // Переключение режимов
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentMode = this.dataset.mode;
+                document.getElementById('performanceInfo').textContent = modeInfo[currentMode];
+            });
+        });
+        
+        // Конвертация текста
+        function convertText() {
+            const input = document.getElementById('testInput').value;
+            const startTime = performance.now();
+            
+            let result = input;
+            
+            // Симуляция конвертации в зависимости от режима
+            const availableEmojis = getAvailableEmojis(currentMode);
+            
+            for (const [code, emoji] of Object.entries(availableEmojis)) {
+                const regex = new RegExp(escapeRegExp(code), 'g');
+                result = result.replace(regex, emoji);
+            }
+            
+            const endTime = performance.now();
+            const processingTime = (endTime - startTime).toFixed(3);
+            
+            document.getElementById('result').innerHTML = result;
+            document.getElementById('conversionTime').textContent = 
+                `⏱️ Время обработки: ${processingTime}ms | Режим: ${currentMode} | Эмоджи доступно: ${Object.keys(availableEmojis).length}`;
+        }
+        
+        // Получение доступных эмоджи в зависимости от режима
+        function getAvailableEmojis(mode) {
+            const popularEmojis = {
+                ':fire:': '🔥', ':heart:': '❤️', ':thumbsup:': '👍', ':smile:': '😊', 
+                ':laugh:': '😂', ':love:': '😍', ':star:': '⭐', ':rocket:': '🚀', 
+                ':crown:': '👑', ':trophy:': '🏆'
+            };
+            
+            const youtubeEmojis = {
+                ':hand-pink-waving:': emojiDatabase[':hand-pink-waving:'],
+                ':face-blue-smiling:': emojiDatabase[':face-blue-smiling:'],
+                ':face-red-droopy-eyes:': emojiDatabase[':face-red-droopy-eyes:'],
+                ':face-purple-crying:': emojiDatabase[':face-purple-crying:'],
+                ':trophy-yellow-smiling:': emojiDatabase[':trophy-yellow-smiling:'],
+                ':face-green-smiling:': emojiDatabase[':face-green-smiling:'],
+                ':face-orange-frowning:': emojiDatabase[':face-orange-frowning:'],
+                ':eyes-purple-crying:': emojiDatabase[':eyes-purple-crying:'],
+                ':face-fuchsia-wide-eyes:': emojiDatabase[':face-fuchsia-wide-eyes:'],
+                ':cat-orange-whistling:': emojiDatabase[':cat-orange-whistling:']
+            };
+            
+            switch (mode) {
+                case 'fast':
+                    return popularEmojis;
+                case 'balanced':
+                    return {...popularEmojis};
+                case 'complete':
+                    return {...popularEmojis};
+                case 'full':
+                    return {...popularEmojis, ...youtubeEmojis};
+                default:
+                    return popularEmojis;
+            }
+        }
+        
+        // Экранирование регулярных выражений
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+        
+        // Добавление эмоджи в текст
+        function addToInput(emojiCode) {
+            const input = document.getElementById('testInput');
+            input.value += ' ' + emojiCode;
+            input.focus();
+        }
+        
+        // Очистка результата
+        function clearResult() {
+            document.getElementById('result').textContent = 'Результат появится здесь...';
+            document.getElementById('conversionTime').textContent = '';
+        }
+        
+        // Поиск эмоджи
+        function searchEmojis() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const resultDiv = document.getElementById('searchResult');
+            
+            if (!query.trim()) {
+                resultDiv.textContent = 'Введите ключевое слово для поиска...';
+                return;
+            }
+            
+            const results = [];
+            for (const [code, emoji] of Object.entries(emojiDatabase)) {
+                if (code.toLowerCase().includes(query)) {
+                    results.push(`${code}: ${emoji}`);
+                }
+            }
+            
+            if (results.length > 0) {
+                resultDiv.innerHTML = `Найдено ${results.length} эмоджи:<br><br>` + results.slice(0, 10).join('<br>');
+                if (results.length > 10) {
+                    resultDiv.innerHTML += `<br><br>... и еще ${results.length - 10} эмоджи`;
+                }
+            } else {
+                resultDiv.textContent = `По запросу "${query}" ничего не найдено.`;
+            }
+        }
+        
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            // Устанавливаем начальный режим
+            document.getElementById('performanceInfo').textContent = modeInfo[currentMode];
+            
+            // Добавляем обработчик Enter для поиска
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchEmojis();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

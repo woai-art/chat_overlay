@@ -49,10 +49,11 @@
             align-items: flex-start;
             margin-bottom: 12px;
             padding: var(--message-padding) 16px;
+            position: relative;
             background: rgba(0, 0, 0, 0.85);
             border-radius: var(--border-radius);
-            backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
             animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             max-width: 100%;
             word-wrap: break-word;
@@ -107,12 +108,177 @@
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
             transition: all var(--transition-speed) ease;
         }
+        
+        /* Стили для мульти-чата - префиксы каналов (только для обычных пользователей) */
+        .username[data-channel="yt1"] {
+            color: #ff6b6b !important;
+        }
+        
+        .username[data-channel="yt2"] {
+            color: #4ecdc4 !important;
+        }
+        
+        .username[data-channel="yt3"] {
+            color: #45b7d1 !important;
+        }
+        
+        .username[data-channel="yt4"] {
+            color: #f39c12 !important;
+        }
+        
+        .username[data-channel="yt5"] {
+            color: #9b59b6 !important;
+        }
+        
+        /* Роли имеют приоритет над каналами - более специфичные селекторы */
+        .message.owner .username,
+        .message.owner .username[data-channel] {
+            color: #FFD700 !important;
+        }
+        
+        .message.moderator .username,
+        .message.moderator .username[data-channel] {
+            color: #2196F3 !important;
+        }
+        
+        .message.sponsor .username,
+        .message.sponsor .username[data-channel] {
+            color: #4CAF50 !important;
+        }
 
         .text {
             color: #f0f0f0;
-            font-size: 1.1em;
-            line-height: 1.5;
+            font-size: 2.2em; /* Увеличили с 1.1em до 2.2em (в 2 раза) - теперь Unicode эмоджи крупнее */
+            line-height: 1.6; /* Немного увеличили line-height для лучшего отображения */
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+        }
+
+        /* УНИВЕРСАЛЬНЫЙ размер для ВСЕХ эмоджи (обычные, YouTube стандартные) */
+        /* НЕ затрагивает аватары и badges */
+        .message-content .text img,
+        .text img:not(.avatar):not([class*="avatar"]):not([class*="badge"]),
+        .text img.emoji,
+        img[class*="emoji"]:not(.avatar):not([class*="avatar"]),
+        img.youtube-emoji,
+        .message .text img:not(.avatar):not([class*="avatar"]) {
+            width: 72px !important;
+            height: 72px !important;
+            max-width: 72px !important;
+            max-height: 72px !important;
+            min-width: 72px !important;
+            min-height: 72px !important;
+            vertical-align: middle !important;
+            margin: 0 2px !important;
+            border-radius: 4px !important;
+            object-fit: contain !important; /* Сохраняет пропорции */
+            display: inline-block !important;
+        }
+        
+        /* Переопределяем ЛЮБЫЕ inline-стили для картинок в тексте */
+        .message-content .text img[style] {
+            width: 72px !important;
+            height: 72px !important;
+        }
+        
+        /* МАКСИМАЛЬНО агрессивное правило для ВСЕХ img внутри .text */
+        /* НО исключаем аватары */
+        div.message div.text img:not(.avatar):not([class*="avatar"]):not([class*="badge"]) {
+            width: 72px !important;
+            height: 72px !important;
+            max-width: 72px !important;
+            max-height: 72px !important;
+            object-fit: contain !important;
+        }
+        
+        /* СПЕЦИАЛЬНЫЕ эмоджи канала (спонсорские) - в 2 раза больше! */
+        .honey-club-emoji,
+        img.honey-club-emoji,
+        .text img.honey-club-emoji,
+        .message-content .text img.honey-club-emoji,
+        div.message div.text img.honey-club-emoji {
+            width: 144px !important;
+            height: 144px !important;
+            max-width: 144px !important;
+            max-height: 144px !important;
+            min-width: 144px !important;
+            min-height: 144px !important;
+            vertical-align: middle !important;
+            margin: 0 4px !important;
+            border-radius: 8px !important;
+            object-fit: contain !important;
+            display: inline-block !important;
+        }
+        
+        /* Аватары - большие для красоты */
+        .avatar,
+        img.avatar,
+        [class*="avatar"] {
+            width: 200px !important;
+            height: 200px !important;
+            border-radius: 50% !important;
+        }
+
+        .message .remove-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 0, 0, 0.85);
+            color: #fff;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .message .remove-btn:hover {
+            background: rgba(255, 64, 64, 0.95);
+            transform: scale(1.1);
+        }
+
+        .message:hover .remove-btn {
+            opacity: 0.25;
+        }
+
+        body.manage-mode .message .remove-btn {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #manage-toggle {
+            position: fixed;
+            top: 60px;
+            right: 10px;
+            z-index: 1000;
+            opacity: 0.3;
+            transition: opacity 0.3s ease;
+        }
+
+        #manage-toggle:hover {
+            opacity: 1;
+        }
+
+        #manage-toggle button {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        #manage-toggle button.active {
+            border-color: rgba(255, 64, 64, 0.8);
+            background: rgba(255, 0, 0, 0.85);
         }
 
         /* ========================================
@@ -127,7 +293,7 @@
         }
 
         .message.sponsor .username {
-            color: #4CAF50;
+            color: #4CAF50 !important;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
         }
 
@@ -144,7 +310,7 @@
         }
 
         .message.moderator .username {
-            color: #2196F3;
+            color: #2196F3 !important;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
         }
 
@@ -161,7 +327,7 @@
         }
 
         .message.owner .username {
-            color: #FFD700;
+            color: #FFD700 !important;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
         }
 
@@ -202,6 +368,108 @@
             background: rgba(0, 0, 0, 0.95);
             border-color: rgba(255, 255, 255, 0.6);
             transform: scale(1.05);
+        }
+
+        /* ========================================
+           ПЕРСОНАЛЬНЫЕ ЭМОДЖИ HONEY CLUB
+           ======================================== */
+        .honey-club-emoji {
+            /* Размер задан выше специальным правилом (144px) */
+            display: inline-block;
+            transition: transform 0.3s ease, filter 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* YouTube эмоджи - размер задан универсальным правилом выше */
+        .youtube-emoji {
+            transition: transform 0.2s ease;
+        }
+
+        .youtube-emoji:hover {
+            transform: scale(1.15);
+        }
+
+        /* Флаги с fallback */
+        .flag-emoji {
+            display: inline-block;
+            font-size: 1.2em;
+            vertical-align: middle;
+            margin: 0 2px;
+        }
+        
+        /* Стиль для fallback текста */
+        .flag-fallback {
+            background: #007bff;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 0.9em;
+            display: inline-block;
+        }
+
+        /* Специальные эффекты для спонсорских эмоджи */
+        .honey-club-emoji:hover {
+            transform: scale(1.15);
+            filter: brightness(1.2) drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* Специальные эффекты для разных эмоций - теперь более заметные! */
+        .honey-club-emoji[alt=":angry:"],
+        .honey-club-emoji[alt=":_HbadgerAngry:"],
+        .honey-club-emoji[alt=":HbadgerAngry:"] {
+            filter: hue-rotate(0deg);
+        }
+
+        .honey-club-emoji[alt=":love:"],
+        .honey-club-emoji[alt=":_HbadgerLove:"],
+        .honey-club-emoji[alt=":HbadgerLove:"] {
+            filter: hue-rotate(300deg) saturate(1.3);
+        }
+
+        .honey-club-emoji[alt=":evil:"],
+        .honey-club-emoji[alt=":_HbadgerEvil:"],
+        .honey-club-emoji[alt=":HbadgerEvil:"] {
+            filter: hue-rotate(270deg) contrast(1.2);
+        }
+
+        .honey-club-emoji[alt=":cute:"],
+        .honey-club-emoji[alt=":_Hbadgercute:"],
+        .honey-club-emoji[alt=":Hbadgercute:"] {
+            filter: hue-rotate(30deg) saturate(1.2);
+        }
+
+        /* Анимация для особых эмоджи - более мощная для больших размеров */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) scale(1); }
+            25% { transform: translateX(-4px) scale(1.05); }
+            75% { transform: translateX(4px) scale(1.05); }
+        }
+
+        .honey-club-emoji[alt*="angry"]:hover,
+        .honey-club-emoji[alt*="Angry"]:hover {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-8px) scale(1.1); }
+        }
+
+        .honey-club-emoji[alt*="hello"]:hover,
+        .honey-club-emoji[alt*="Hello"]:hover {
+            animation: bounce 0.6s ease-in-out;
+        }
+        
+        /* Дополнительное свечение для VIP эмоджи */
+        .honey-club-emoji {
+            box-shadow: 0 0 0 rgba(255, 215, 0, 0);
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .honey-club-emoji:hover {
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
         }
 
         /* ========================================
@@ -318,6 +586,10 @@
         <button onclick="showThemeSelector()">🎨</button>
     </div>
 
+    <div id="manage-toggle">
+        <button id="manage-toggle-btn" title="Включить режим удаления (Ctrl+Shift+D)">🗑️</button>
+    </div>
+
     <script>
         // ========================================
         // ВСТРОЕННАЯ БАЗА ЭМОДЖИ
@@ -344,15 +616,520 @@
             // Животные
             ':dog:': '🐶', ':cat:': '🐱', ':bear:': '🐻', ':panda_face:': '🐼',
             // Другое
-            ':glowing_star:': '🌟', ':collision:': '💥', ':sweat_droplets:': '💦'
+            ':glowing_star:': '🌟', ':collision:': '💥', ':sweat_droplets:': '💦',
+            // Новые эмоджи (добавлены для исправления проблем)
+            ':grey_heart:': '🩶', ':gray_heart:': '🩶',
+            ':light_blue_heart:': '🩵', ':blue_heart:': '💙',
+            ':melting_face:': '🫠', ':face_holding_back_tears:': '🥹',
+            ':goose:': '🪿', ':brown_mushroom:': '🍄',
+            ':pink_heart:': '🩷', ':rainbow_flag:': '🏳️‍🌈',
+            // Флаги государств теперь загружаются из flags_data.json
         };
+
+        // Персональные эмоджи канала Honey Club
+        const HONEY_CLUB_EMOJIS = {
+            // Основные коды (короткие)
+            ':angry:': '<img src="./Emoji-Honey-Club/angry.png" class="honey-club-emoji" alt=":angry:" title="Злой">',
+            ':hello:': '<img src="./Emoji-Honey-Club/hello.png" class="honey-club-emoji" alt=":hello:" title="Привет">',
+            ':love:': '<img src="./Emoji-Honey-Club/love.png" class="honey-club-emoji" alt=":love:" title="Любовь">',
+            ':cute:': '<img src="./Emoji-Honey-Club/сute.png" class="honey-club-emoji" alt=":cute:" title="Милый">',
+            ':Kaif:': '<img src="./Emoji-Honey-Club/Kaif.png" class="honey-club-emoji" alt=":Kaif:" title="Кайф">',
+            ':evil:': '<img src="./Emoji-Honey-Club/evil.png" class="honey-club-emoji" alt=":evil:" title="Злобный">',
+            ':monster:': '<img src="./Emoji-Honey-Club/monster.png" class="honey-club-emoji" alt=":monster:" title="Монстр">',
+            ':HurryUp:': '<img src="./Emoji-Honey-Club/HurryUp.png" class="honey-club-emoji" alt=":HurryUp:" title="Торопись">',
+            ':Zlost:': '<img src="./Emoji-Honey-Club/Zlost.png" class="honey-club-emoji" alt=":Zlost:" title="Злость">',
+            ':dislike:': '<img src="./Emoji-Honey-Club/dislike.png" class="honey-club-emoji" alt=":dislike:" title="Не нравится">',
+            ':comeon:': '<img src="./Emoji-Honey-Club/comeon.png" class="honey-club-emoji" alt=":comeon:" title="Давай же">',
+            ':hugs:': '<img src="./Emoji-Honey-Club/hugs.png" class="honey-club-emoji" alt=":hugs:" title="Обнимашки">',
+            ':shout:': '<img src="./Emoji-Honey-Club/shout.png" class="honey-club-emoji" alt=":shout:" title="Кричит">',
+            ':hungover:': '<img src="./Emoji-Honey-Club/hungover.png" class="honey-club-emoji" alt=":hungover:" title="С похмелья">',
+            ':vomit:': '<img src="./Emoji-Honey-Club/vomit.png" class="honey-club-emoji" alt=":vomit:" title="Тошнит">',
+            
+            // YouTube коды (с префиксом Hbadger) - используем HTTP пути
+            // Варианты БЕЗ подчеркиваний (для ручного ввода)
+            ':HbadgerAngry:': '<img src="http://localhost:8080/Emoji-Honey-Club/angry.png" class="honey-club-emoji" alt=":HbadgerAngry:" title="Злой">',
+            ':HbadgerShout:': '<img src="http://localhost:8080/Emoji-Honey-Club/shout.png" class="honey-club-emoji" alt=":HbadgerShout:" title="Кричит">',
+            ':HbadgerHello:': '<img src="http://localhost:8080/Emoji-Honey-Club/hello.png" class="honey-club-emoji" alt=":HbadgerHello:" title="Привет">',
+            ':HbadgerEvil:': '<img src="http://localhost:8080/Emoji-Honey-Club/evil.png" class="honey-club-emoji" alt=":HbadgerEvil:" title="Злобный">',
+            ':HbadgerLove:': '<img src="http://localhost:8080/Emoji-Honey-Club/love.png" class="honey-club-emoji" alt=":HbadgerLove:" title="Любовь">',
+            ':HbadgerHungover:': '<img src="http://localhost:8080/Emoji-Honey-Club/hungover.png" class="honey-club-emoji" alt=":HbadgerHungover:" title="С похмелья">',
+            ':HbadgerVomit:': '<img src="http://localhost:8080/Emoji-Honey-Club/vomit.png" class="honey-club-emoji" alt=":HbadgerVomit:" title="Тошнит">',
+            ':Hbadgercute:': '<img src="http://localhost:8080/Emoji-Honey-Club/сute.png" class="honey-club-emoji" alt=":Hbadgercute:" title="Милый">',
+            ':Hbadgerсute:': '<img src="http://localhost:8080/Emoji-Honey-Club/сute.png" class="honey-club-emoji" alt=":Hbadgerсute:" title="Милый">',
+            ':HbadgerMonster:': '<img src="http://localhost:8080/Emoji-Honey-Club/monster.png" class="honey-club-emoji" alt=":HbadgerMonster:" title="Монстр">',
+            ':HbadgerKaif:': '<img src="http://localhost:8080/Emoji-Honey-Club/Kaif.png" class="honey-club-emoji" alt=":HbadgerKaif:" title="Кайф">',
+            ':HbadgerDislike:': '<img src="http://localhost:8080/Emoji-Honey-Club/dislike.png" class="honey-club-emoji" alt=":HbadgerDislike:" title="Не нравится">',
+            ':HbadgerComeon:': '<img src="http://localhost:8080/Emoji-Honey-Club/comeon.png" class="honey-club-emoji" alt=":HbadgerComeon:" title="Давай же">',
+            ':HbadgerHugs:': '<img src="http://localhost:8080/Emoji-Honey-Club/hugs.png" class="honey-club-emoji" alt=":HbadgerHugs:" title="Обнимашки">',
+            ':HbadgerHurryUp:': '<img src="http://localhost:8080/Emoji-Honey-Club/HurryUp.png" class="honey-club-emoji" alt=":HbadgerHurryUp:" title="Торопись">',
+            ':HbadgerZlost:': '<img src="http://localhost:8080/Emoji-Honey-Club/Zlost.png" class="honey-club-emoji" alt=":HbadgerZlost:" title="Злость">',
+            
+            // Варианты С подчеркиваниями (как приходят из YouTube)
+            ':_HbadgerAngry:': '<img src="http://localhost:8080/Emoji-Honey-Club/angry.png" class="honey-club-emoji" alt=":_HbadgerAngry:" title="Злой">',
+            ':_HbadgerShout:': '<img src="http://localhost:8080/Emoji-Honey-Club/shout.png" class="honey-club-emoji" alt=":_HbadgerShout:" title="Кричит">',
+            ':_HbadgerHello:': '<img src="http://localhost:8080/Emoji-Honey-Club/hello.png" class="honey-club-emoji" alt=":_HbadgerHello:" title="Привет">',
+            ':_HbadgerEvil:': '<img src="http://localhost:8080/Emoji-Honey-Club/evil.png" class="honey-club-emoji" alt=":_HbadgerEvil:" title="Злобный">',
+            ':_HbadgerLove:': '<img src="http://localhost:8080/Emoji-Honey-Club/love.png" class="honey-club-emoji" alt=":_HbadgerLove:" title="Любовь">',
+            ':_HbadgerHungover:': '<img src="http://localhost:8080/Emoji-Honey-Club/hungover.png" class="honey-club-emoji" alt=":_HbadgerHungover:" title="С похмелья">',
+            ':_HbadgerVomit:': '<img src="http://localhost:8080/Emoji-Honey-Club/vomit.png" class="honey-club-emoji" alt=":_HbadgerVomit:" title="Тошнит">',
+            ':_Hbadgercute:': '<img src="http://localhost:8080/Emoji-Honey-Club/сute.png" class="honey-club-emoji" alt=":_Hbadgercute:" title="Милый">',
+            ':_Hbadgerсute:': '<img src="http://localhost:8080/Emoji-Honey-Club/сute.png" class="honey-club-emoji" alt=":_Hbadgerсute:" title="Милый">',
+            ':_HbadgerMonster:': '<img src="http://localhost:8080/Emoji-Honey-Club/monster.png" class="honey-club-emoji" alt=":_HbadgerMonster:" title="Монстр">',
+            ':_HbadgerKaif:': '<img src="http://localhost:8080/Emoji-Honey-Club/Kaif.png" class="honey-club-emoji" alt=":_HbadgerKaif:" title="Кайф">',
+            ':_HbadgerDislike:': '<img src="http://localhost:8080/Emoji-Honey-Club/dislike.png" class="honey-club-emoji" alt=":_HbadgerDislike:" title="Не нравится">',
+            ':_HbadgerComeon:': '<img src="http://localhost:8080/Emoji-Honey-Club/comeon.png" class="honey-club-emoji" alt=":_HbadgerComeon:" title="Давай же">',
+            ':_HbadgerHugs:': '<img src="http://localhost:8080/Emoji-Honey-Club/hugs.png" class="honey-club-emoji" alt=":_HbadgerHugs:" title="Обнимашки">',
+            ':_HbadgerHurryUp:': '<img src="http://localhost:8080/Emoji-Honey-Club/HurryUp.png" class="honey-club-emoji" alt=":_HbadgerHurryUp:" title="Торопись">',
+            ':_HbadgerZlost:': '<img src="http://localhost:8080/Emoji-Honey-Club/Zlost.png" class="honey-club-emoji" alt=":_HbadgerZlost:" title="Злость">'
+        };
+
+        // YouTube эмоджи (загружаем асинхронно)
+        let YOUTUBE_EMOJIS = {};
+        
+        // Флаги стран (загружаем асинхронно)
+        let FLAGS_DATA = {};
+
+        // Управление режимом удаления
+        let manageMode = false;
+        
+        // Загрузка YouTube эмоджи
+        async function loadYouTubeEmojis() {
+            try {
+                const response = await fetch('youtube_emojis.json?' + Date.now());
+                
+                if (response.ok) {
+                    const text = await response.text();
+                    YOUTUBE_EMOJIS = JSON.parse(text);
+                    console.log(`✅ YouTube эмоджи загружены: ${Object.keys(YOUTUBE_EMOJIS).length}`);
+                    
+                    // Добавляем альтернативные коды для проблемных эмоджи
+                    addAlternativeEmojiCodes();
+                    
+                } else {
+                    console.warn('⚠️ Ошибка загрузки YouTube эмоджи:', response.status, response.statusText);
+                    // Пробуем альтернативный путь
+                    await tryAlternativeYouTubeLoad();
+                }
+            } catch (error) {
+                console.warn('⚠️ Не удалось загрузить YouTube эмоджи:', error);
+                await tryAlternativeYouTubeLoad();
+            }
+        }
+        
+        // Альтернативная загрузка YouTube эмоджи
+        async function tryAlternativeYouTubeLoad() {
+            try {
+                const response = await fetch('./youtube_emojis.json', {
+                    method: 'GET',
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    }
+                });
+                
+                if (response.ok) {
+                    YOUTUBE_EMOJIS = await response.json();
+                    console.log(`✅ YouTube эмоджи загружены (alt): ${Object.keys(YOUTUBE_EMOJIS).length}`);
+                    
+                    // Добавляем альтернативные коды для проблемных эмоджи
+                    addAlternativeEmojiCodes();
+                    
+                } else {
+                    console.warn('⚠️ YouTube эмоджи недоступны. Работаем без них.');
+                }
+            } catch (altError) {
+                console.warn('⚠️ YouTube эмоджи недоступны:', altError.message);
+            }
+        }
+        
+        // Загрузка флагов стран
+        // Встроенные данные флагов (избегаем CORS проблемы в vMix)
+        const EMBEDDED_FLAGS_DATA = [
+            {"code": "AD", "emoji": "🇦🇩", "name": "Andorra"}, {"code": "AE", "emoji": "🇦🇪", "name": "United Arab Emirates"}, {"code": "AF", "emoji": "🇦🇫", "name": "Afghanistan"},
+            {"code": "AG", "name": "Antigua and Barbuda"}, {"code": "AI", "name": "Anguilla"}, {"code": "AL", "name": "Albania"},
+            {"code": "AM", "name": "Armenia"}, {"code": "AO", "name": "Angola"}, {"code": "AQ", "name": "Antarctica"},
+            {"code": "AR", "name": "Argentina"}, {"code": "AS", "name": "American Samoa"}, {"code": "AT", "name": "Austria"},
+            {"code": "AU", "name": "Australia"}, {"code": "AW", "name": "Aruba"}, {"code": "AX", "name": "Åland Islands"},
+            {"code": "AZ", "name": "Azerbaijan"}, {"code": "BA", "name": "Bosnia and Herzegovina"}, {"code": "BB", "name": "Barbados"},
+            {"code": "BD", "name": "Bangladesh"}, {"code": "BE", "name": "Belgium"}, {"code": "BF", "name": "Burkina Faso"},
+            {"code": "BG", "name": "Bulgaria"}, {"code": "BH", "name": "Bahrain"}, {"code": "BI", "name": "Burundi"},
+            {"code": "BJ", "name": "Benin"}, {"code": "BL", "name": "Saint Barthélemy"}, {"code": "BM", "name": "Bermuda"},
+            {"code": "BN", "name": "Brunei"}, {"code": "BO", "name": "Bolivia"}, {"code": "BQ", "name": "Caribbean Netherlands"},
+            {"code": "BR", "name": "Brazil"}, {"code": "BS", "name": "Bahamas"}, {"code": "BT", "name": "Bhutan"},
+            {"code": "BV", "name": "Bouvet Island"}, {"code": "BW", "name": "Botswana"}, {"code": "BY", "name": "Belarus"},
+            {"code": "BZ", "name": "Belize"}, {"code": "CA", "name": "Canada"}, {"code": "CC", "name": "Cocos (Keeling) Islands"},
+            {"code": "CD", "name": "Congo (Democratic Republic)"}, {"code": "CF", "name": "Central African Republic"}, {"code": "CG", "name": "Congo (Republic)"},
+            {"code": "CH", "name": "Switzerland"}, {"code": "CI", "name": "Côte d'Ivoire"}, {"code": "CK", "name": "Cook Islands"},
+            {"code": "CL", "name": "Chile"}, {"code": "CM", "name": "Cameroon"}, {"code": "CN", "name": "China"},
+            {"code": "CO", "name": "Colombia"}, {"code": "CR", "name": "Costa Rica"}, {"code": "CU", "name": "Cuba"},
+            {"code": "CV", "name": "Cape Verde"}, {"code": "CW", "name": "Curaçao"}, {"code": "CX", "name": "Christmas Island"},
+            {"code": "CY", "name": "Cyprus"}, {"code": "CZ", "name": "Czech Republic"}, {"code": "DE", "name": "Germany"},
+            {"code": "DJ", "name": "Djibouti"}, {"code": "DK", "name": "Denmark"}, {"code": "DM", "name": "Dominica"},
+            {"code": "DO", "name": "Dominican Republic"}, {"code": "DZ", "name": "Algeria"}, {"code": "EC", "name": "Ecuador"},
+            {"code": "EE", "name": "Estonia"}, {"code": "EG", "name": "Egypt"}, {"code": "EH", "name": "Western Sahara"},
+            {"code": "ER", "name": "Eritrea"}, {"code": "ES", "name": "Spain"}, {"code": "ET", "name": "Ethiopia"},
+            {"code": "FI", "name": "Finland"}, {"code": "FJ", "name": "Fiji"}, {"code": "FK", "name": "Falkland Islands"},
+            {"code": "FM", "name": "Micronesia"}, {"code": "FO", "name": "Faroe Islands"}, {"code": "FR", "name": "France"},
+            {"code": "GA", "name": "Gabon"}, {"code": "GB", "name": "United Kingdom"}, {"code": "GD", "name": "Grenada"},
+            {"code": "GE", "name": "Georgia"}, {"code": "GF", "name": "French Guiana"}, {"code": "GG", "name": "Guernsey"},
+            {"code": "GH", "name": "Ghana"}, {"code": "GI", "name": "Gibraltar"}, {"code": "GL", "name": "Greenland"},
+            {"code": "GM", "name": "Gambia"}, {"code": "GN", "name": "Guinea"}, {"code": "GP", "name": "Guadeloupe"},
+            {"code": "GQ", "name": "Equatorial Guinea"}, {"code": "GR", "name": "Greece"}, {"code": "GS", "name": "South Georgia"},
+            {"code": "GT", "name": "Guatemala"}, {"code": "GU", "name": "Guam"}, {"code": "GW", "name": "Guinea-Bissau"},
+            {"code": "GY", "name": "Guyana"}, {"code": "HK", "name": "Hong Kong"}, {"code": "HM", "name": "Heard Island"},
+            {"code": "HN", "name": "Honduras"}, {"code": "HR", "name": "Croatia"}, {"code": "HT", "name": "Haiti"},
+            {"code": "HU", "name": "Hungary"}, {"code": "ID", "name": "Indonesia"}, {"code": "IE", "name": "Ireland"},
+            {"code": "IL", "name": "Israel"}, {"code": "IM", "name": "Isle of Man"}, {"code": "IN", "name": "India"},
+            {"code": "IO", "name": "British Indian Ocean Territory"}, {"code": "IQ", "name": "Iraq"}, {"code": "IR", "name": "Iran"},
+            {"code": "IS", "name": "Iceland"}, {"code": "IT", "name": "Italy"}, {"code": "JE", "name": "Jersey"},
+            {"code": "JM", "name": "Jamaica"}, {"code": "JO", "name": "Jordan"}, {"code": "JP", "name": "Japan"},
+            {"code": "KE", "name": "Kenya"}, {"code": "KG", "name": "Kyrgyzstan"}, {"code": "KH", "name": "Cambodia"},
+            {"code": "KI", "name": "Kiribati"}, {"code": "KM", "name": "Comoros"}, {"code": "KN", "name": "Saint Kitts and Nevis"},
+            {"code": "KP", "name": "North Korea"}, {"code": "KR", "name": "South Korea"}, {"code": "KW", "name": "Kuwait"},
+            {"code": "KY", "name": "Cayman Islands"}, {"code": "KZ", "name": "Kazakhstan"}, {"code": "LA", "name": "Laos"},
+            {"code": "LB", "name": "Lebanon"}, {"code": "LC", "name": "Saint Lucia"}, {"code": "LI", "name": "Liechtenstein"},
+            {"code": "LK", "name": "Sri Lanka"}, {"code": "LR", "name": "Liberia"}, {"code": "LS", "name": "Lesotho"},
+            {"code": "LT", "name": "Lithuania"}, {"code": "LU", "name": "Luxembourg"}, {"code": "LV", "name": "Latvia"},
+            {"code": "LY", "name": "Libya"}, {"code": "MA", "name": "Morocco"}, {"code": "MC", "name": "Monaco"},
+            {"code": "MD", "name": "Moldova"}, {"code": "ME", "name": "Montenegro"}, {"code": "MF", "name": "Saint Martin"},
+            {"code": "MG", "name": "Madagascar"}, {"code": "MH", "name": "Marshall Islands"}, {"code": "MK", "name": "North Macedonia"},
+            {"code": "ML", "name": "Mali"}, {"code": "MM", "name": "Myanmar"}, {"code": "MN", "name": "Mongolia"},
+            {"code": "MO", "name": "Macao"}, {"code": "MP", "name": "Northern Mariana Islands"}, {"code": "MQ", "name": "Martinique"},
+            {"code": "MR", "name": "Mauritania"}, {"code": "MS", "name": "Montserrat"}, {"code": "MT", "name": "Malta"},
+            {"code": "MU", "name": "Mauritius"}, {"code": "MV", "name": "Maldives"}, {"code": "MW", "name": "Malawi"},
+            {"code": "MX", "name": "Mexico"}, {"code": "MY", "name": "Malaysia"}, {"code": "MZ", "name": "Mozambique"},
+            {"code": "NA", "name": "Namibia"}, {"code": "NC", "name": "New Caledonia"}, {"code": "NE", "name": "Niger"},
+            {"code": "NF", "name": "Norfolk Island"}, {"code": "NG", "name": "Nigeria"}, {"code": "NI", "name": "Nicaragua"},
+            {"code": "NL", "name": "Netherlands"}, {"code": "NO", "name": "Norway"}, {"code": "NP", "name": "Nepal"},
+            {"code": "NR", "name": "Nauru"}, {"code": "NU", "name": "Niue"}, {"code": "NZ", "name": "New Zealand"},
+            {"code": "OM", "name": "Oman"}, {"code": "PA", "name": "Panama"}, {"code": "PE", "name": "Peru"},
+            {"code": "PF", "name": "French Polynesia"}, {"code": "PG", "name": "Papua New Guinea"}, {"code": "PH", "name": "Philippines"},
+            {"code": "PK", "name": "Pakistan"}, {"code": "PL", "name": "Poland"}, {"code": "PM", "name": "Saint Pierre and Miquelon"},
+            {"code": "PN", "name": "Pitcairn Islands"}, {"code": "PR", "name": "Puerto Rico"}, {"code": "PS", "name": "Palestine"},
+            {"code": "PT", "name": "Portugal"}, {"code": "PW", "name": "Palau"}, {"code": "PY", "name": "Paraguay"},
+            {"code": "QA", "name": "Qatar"}, {"code": "RE", "name": "Réunion"}, {"code": "RO", "name": "Romania"},
+            {"code": "RS", "name": "Serbia"}, {"code": "RU", "name": "Russia"}, {"code": "RW", "name": "Rwanda"},
+            {"code": "SA", "name": "Saudi Arabia"}, {"code": "SB", "name": "Solomon Islands"}, {"code": "SC", "name": "Seychelles"},
+            {"code": "SD", "name": "Sudan"}, {"code": "SE", "name": "Sweden"}, {"code": "SG", "name": "Singapore"},
+            {"code": "SH", "name": "Saint Helena"}, {"code": "SI", "name": "Slovenia"}, {"code": "SJ", "name": "Svalbard and Jan Mayen"},
+            {"code": "SK", "name": "Slovakia"}, {"code": "SL", "name": "Sierra Leone"}, {"code": "SM", "name": "San Marino"},
+            {"code": "SN", "name": "Senegal"}, {"code": "SO", "name": "Somalia"}, {"code": "SR", "name": "Suriname"},
+            {"code": "SS", "name": "South Sudan"}, {"code": "ST", "name": "São Tomé and Príncipe"}, {"code": "SV", "name": "El Salvador"},
+            {"code": "SX", "name": "Sint Maarten"}, {"code": "SY", "name": "Syria"}, {"code": "SZ", "name": "Eswatini"},
+            {"code": "TC", "name": "Turks and Caicos Islands"}, {"code": "TD", "name": "Chad"}, {"code": "TF", "name": "French Southern Territories"},
+            {"code": "TG", "name": "Togo"}, {"code": "TH", "name": "Thailand"}, {"code": "TJ", "name": "Tajikistan"},
+            {"code": "TK", "name": "Tokelau"}, {"code": "TL", "name": "Timor-Leste"}, {"code": "TM", "name": "Turkmenistan"},
+            {"code": "TN", "name": "Tunisia"}, {"code": "TO", "name": "Tonga"}, {"code": "TR", "name": "Turkey"},
+            {"code": "TT", "name": "Trinidad and Tobago"}, {"code": "TV", "name": "Tuvalu"}, {"code": "TW", "name": "Taiwan"},
+            {"code": "TZ", "name": "Tanzania"}, {"code": "UA", "name": "Ukraine"}, {"code": "UG", "name": "Uganda"},
+            {"code": "UM", "name": "U.S. Outlying Islands"}, {"code": "US", "name": "United States"}, {"code": "UY", "name": "Uruguay"},
+            {"code": "UZ", "name": "Uzbekistan"}, {"code": "VA", "name": "Vatican City"}, {"code": "VC", "name": "Saint Vincent and the Grenadines"},
+            {"code": "VE", "name": "Venezuela"}, {"code": "VG", "name": "British Virgin Islands"}, {"code": "VI", "name": "U.S. Virgin Islands"},
+            {"code": "VN", "name": "Vietnam"}, {"code": "VU", "name": "Vanuatu"}, {"code": "WF", "name": "Wallis and Futuna"},
+            {"code": "WS", "name": "Samoa"}, {"code": "YE", "name": "Yemen"}, {"code": "YT", "name": "Mayotte"},
+            {"code": "ZA", "name": "South Africa"}, {"code": "ZM", "name": "Zambia"}, {"code": "ZW", "name": "Zimbabwe"}
+        ];
+
+        // Инициализация флагов (синхронно, без CORS проблем)
+        function initFlags() {
+            
+            // Создаем карту Unicode эмоджи флагов к текстовым представлениям
+            const flagEmojiMap = {
+                '🇺🇸': '[US]', '🇺🇦': '[UA]', '🇹🇷': '[TR]', '🇸🇪': '[SE]', '🇰🇷': '[KR]',
+                '🇻🇳': '[VN]', '🇯🇵': '[JP]', '🇱🇻': '[LV]', '🇱🇹': '[LT]', '🇮🇱': '[IL]',
+                '🇫🇮': '[FI]', '🇨🇭': '[CH]', '🇪🇪': '[EE]', '🇬🇷': '[GR]', '🇬🇪': '[GE]',
+                '🇩🇪': '[DE]', '🇫🇷': '[FR]', '🇬🇧': '[GB]', '🇮🇹': '[IT]', '🇪🇸': '[ES]',
+                '🇵🇱': '[PL]', '🇨🇦': '[CA]', '🇧🇷': '[BR]', '🇦🇷': '[AR]', '🇲🇽': '[MX]',
+                '🇦🇺': '[AU]', '🇳🇿': '[NZ]', '🇿🇦': '[ZA]', '🇪🇬': '[EG]', '🇳🇬': '[NG]',
+                '🇰🇪': '[KE]', '🇲🇦': '[MA]', '🇹🇳': '[TN]', '🇩🇿': '[DZ]', '🇱🇾': '[LY]',
+                '🇸🇩': '[SD]', '🇪🇹': '[ET]', '🇺🇬': '[UG]', '🇹🇿': '[TZ]', '🇷🇼': '[RW]',
+                '🇧🇫': '[BF]', '🇲🇱': '[ML]', '🇳🇪': '[NE]', '🇹🇩': '[TD]', '🇨🇫': '[CF]',
+                '🇨🇲': '[CM]', '🇬🇦': '[GA]', '🇨🇬': '[CG]', '🇨🇩': '[CD]', '🇦🇴': '[AO]',
+                '🇿🇲': '[ZM]', '🇿🇼': '[ZW]', '🇧🇼': '[BW]', '🇳🇦': '[NA]', '🇸🇿': '[SZ]',
+                '🇱🇸': '[LS]', '🇲🇼': '[MW]', '🇲🇿': '[MZ]', '🇲🇬': '[MG]', '🇲🇺': '[MU]',
+                '🇸🇨': '[SC]', '🇰🇲': '[KM]', '🇾🇹': '[YT]', '🇷🇪': '[RE]', '🇸🇭': '[SH]',
+                '🇸🇹': '[ST]', '🇨🇻': '[CV]', '🇬🇼': '[GW]', '🇬🇲': '[GM]', '🇸🇳': '[SN]',
+                '🇲🇷': '[MR]', '🇬🇳': '[GN]', '🇸🇱': '[SL]', '🇱🇷': '[LR]', '🇨🇮': '[CI]',
+                '🇬🇭': '[GH]', '🇹🇬': '[TG]', '🇧🇯': '[BJ]', '🇳🇬': '[NG]', '🇨🇳': '[CN]',
+                '🇮🇳': '[IN]', '🇵🇰': '[PK]', '🇧🇩': '[BD]', '🇱🇰': '[LK]', '🇲🇻': '[MV]',
+                '🇳🇵': '[NP]', '🇧🇹': '[BT]', '🇲🇲': '[MM]', '🇹🇭': '[TH]', '🇱🇦': '[LA]',
+                '🇰🇭': '[KH]', '🇻🇳': '[VN]', '🇲🇾': '[MY]', '🇸🇬': '[SG]', '🇮🇩': '[ID]',
+                '🇵🇭': '[PH]', '🇧🇳': '[BN]', '🇹🇱': '[TL]', '🇵🇬': '[PG]', '🇸🇧': '[SB]',
+                '🇻🇺': '[VU]', '🇳🇨': '[NC]', '🇫🇯': '[FJ]', '🇳🇷': '[NR]', '🇰🇮': '[KI]',
+                '🇹🇻': '[TV]', '🇼🇸': '[WS]', '🇹🇴': '[TO]', '🇵🇼': '[PW]', '🇫🇲': '[FM]',
+                '🇲🇭': '[MH]', '🇷🇺': '[RU]', '🇰🇿': '[KZ]', '🇺🇿': '[UZ]', '🇹🇲': '[TM]',
+                '🇰🇬': '[KG]', '🇹🇯': '[TJ]', '🇦🇫': '[AF]', '🇮🇷': '[IR]', '🇮🇶': '[IQ]',
+                '🇸🇾': '[SY]', '🇯🇴': '[JO]', '🇱🇧': '[LB]', '🇵🇸': '[PS]', '🇸🇦': '[SA]',
+                '🇾🇪': '[YE]', '🇴🇲': '[OM]', '🇦🇪': '[AE]', '🇶🇦': '[QA]', '🇧🇭': '[BH]',
+                '🇰🇼': '[KW]', '🇦🇲': '[AM]', '🇦🇿': '[AZ]', '🇬🇪': '[GE]', '🇹🇷': '[TR]',
+                '🇨🇾': '[CY]', '🇲🇹': '[MT]', '🇦🇩': '[AD]', '🇸🇲': '[SM]', '🇻🇦': '[VA]',
+                '🇲🇨': '[MC]', '🇱🇮': '[LI]', '🇦🇹': '[AT]', '🇨🇿': '[CZ]', '🇸🇰': '[SK]',
+                '🇭🇺': '[HU]', '🇷🇴': '[RO]', '🇧🇬': '[BG]', '🇷🇸': '[RS]', '🇲🇪': '[ME]',
+                '🇧🇦': '[BA]', '🇭🇷': '[HR]', '🇸🇮': '[SI]', '🇲🇰': '[MK]', '🇦🇱': '[AL]',
+                '🇲🇩': '[MD]', '🇧🇾': '[BY]', '🇱🇹': '[LT]', '🇱🇻': '[LV]', '🇪🇪': '[EE]',
+                '🇫🇮': '[FI]', '🇸🇪': '[SE]', '🇳🇴': '[NO]', '🇩🇰': '[DK]', '🇮🇸': '[IS]',
+                '🇮🇪': '[IE]', '🇬🇧': '[GB]', '🇳🇱': '[NL]', '🇧🇪': '[BE]', '🇱🇺': '[LU]',
+                '🇨🇭': '[CH]', '🇵🇹': '[PT]'
+            };
+            
+            // Добавляем прямое сопоставление Unicode эмоджи к текстовым представлениям
+            Object.entries(flagEmojiMap).forEach(([emoji, text]) => {
+                FLAGS_DATA[emoji] = `<span class="flag-fallback">${text}</span>`;
+            });
+            
+            EMBEDDED_FLAGS_DATA.forEach(flag => {
+                const code = flag.code.toLowerCase();
+                const name = flag.name.toLowerCase().replace(/\s+/g, '_');
+                
+                // Создаем простое текстовое представление флага
+                const flagText = `<span class="flag-fallback">[${code.toUpperCase()}]</span>`;
+                
+                // Добавляем различные варианты кодов (для обратной совместимости)
+                FLAGS_DATA[`:${code}:`] = flagText;
+                FLAGS_DATA[`:flag_${code}:`] = flagText;
+                FLAGS_DATA[`:${name}:`] = flagText;
+                
+                // Специальные случаи
+                if (code === 'us') {
+                    FLAGS_DATA[':usa:'] = `<span class="flag-fallback">[US]</span>`;
+                    FLAGS_DATA[':united_states:'] = `<span class="flag-fallback">[US]</span>`;
+                }
+                if (code === 'gb') {
+                    FLAGS_DATA[':uk:'] = `<span class="flag-fallback">[GB]</span>`;
+                    FLAGS_DATA[':united_kingdom:'] = `<span class="flag-fallback">[GB]</span>`;
+                }
+                if (code === 'ua') {
+                    FLAGS_DATA[':ukraine:'] = `<span class="flag-fallback">[UA]</span>`;
+                }
+                if (code === 'ru') {
+                    FLAGS_DATA[':russia:'] = `<span class="flag-fallback">[RU]</span>`;
+                }
+                if (code === 'de') {
+                    FLAGS_DATA[':germany:'] = `<span class="flag-fallback">[DE]</span>`;
+                }
+                if (code === 'fr') {
+                    FLAGS_DATA[':france:'] = `<span class="flag-fallback">[FR]</span>`;
+                }
+                if (code === 'pl') {
+                    FLAGS_DATA[':poland:'] = `<span class="flag-fallback">[PL]</span>`;
+                }
+                if (code === 'ca') {
+                    FLAGS_DATA[':canada:'] = `<span class="flag-fallback">[CA]</span>`;
+                }
+                if (code === 'jp') {
+                    FLAGS_DATA[':japan:'] = `<span class="flag-fallback">[JP]</span>`;
+                }
+                if (code === 'cn') {
+                    FLAGS_DATA[':china:'] = `<span class="flag-fallback">[CN]</span>`;
+                }
+            });
+            
+        }
+
+        // Функция для добавления альтернативных кодов эмоджи
+        function addAlternativeEmojiCodes() {
+            let addedCount = 0;
+            
+            // Исправляем проблемные коды эмоджи
+            if (YOUTUBE_EMOJIS[':oops:']) {
+                YOUTUBE_EMOJIS[':ops:'] = YOUTUBE_EMOJIS[':oops:'];
+                addedCount++;
+            }
+
+            if (YOUTUBE_EMOJIS[':octopus-red-waving:']) {
+                YOUTUBE_EMOJIS[':ctopus-red-waving:'] = YOUTUBE_EMOJIS[':octopus-red-waving:'];
+                addedCount++;
+            }
+        }
 
         function convertEmojis(text) {
             let result = text;
-            for (const [code, emoji] of Object.entries(EMOJI_MAP)) {
-                const escapedCode = code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                result = result.replace(new RegExp(escapedCode, 'g'), emoji);
+            let replacements = 0;
+            
+            
+            // 1. Сначала обрабатываем персональные эмоджи канала (высший приоритет)
+            for (const [code, emoji] of Object.entries(HONEY_CLUB_EMOJIS)) {
+                if (result.includes(code)) {
+                    const escapedCode = code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const regex = new RegExp(escapedCode, 'g');
+                    result = result.replace(regex, emoji);
+                    replacements++;
+                }
             }
+            
+            // 2. Затем флаги стран
+            for (const [code, emoji] of Object.entries(FLAGS_DATA)) {
+                if (result.includes(code)) {
+                    const escapedCode = code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const regex = new RegExp(escapedCode, 'g');
+                    result = result.replace(regex, emoji);
+                    replacements++;
+                }
+            }
+            
+            // 3. Затем YouTube эмоджи
+            for (const [code, emoji] of Object.entries(YOUTUBE_EMOJIS)) {
+                if (result.includes(code)) {
+                    const escapedCode = code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const regex = new RegExp(escapedCode, 'g');
+                    // Убираем встроенные стили из YouTube эмоджи
+                    const cleanEmoji = emoji.replace(/style="[^"]*"/g, '');
+                    result = result.replace(regex, cleanEmoji);
+                    replacements++;
+                }
+            }
+            
+            // 4. Наконец стандартные эмоджи
+            for (const [code, emoji] of Object.entries(EMOJI_MAP)) {
+                if (result.includes(code)) {
+                    const escapedCode = code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const regex = new RegExp(escapedCode, 'g');
+                    result = result.replace(regex, emoji);
+                    replacements++;
+                }
+            }
+            
+            return result;
+        }
+
+        /**
+         * Санитизация текста с эмоджи. Разрешаем только img/span.flag-fallback/br.
+         * Сохраняет текстовые узлы (включая Unicode эмодзи) и обрабатывает только HTML-элементы.
+         */
+        function sanitizeEmojiHtml(rawHtml) {
+            if (!rawHtml) return '';
+            
+            // Если нет HTML-тегов, просто возвращаем текст как есть (для Unicode эмодзи)
+            if (!rawHtml.includes('<')) {
+                return rawHtml;
+            }
+
+            // DEBUG: Логируем входные данные для проблемных сообщений
+            if (rawHtml.includes('Привет') || rawHtml.length > 200) {
+                console.log('[DEBUG] sanitizeEmojiHtml INPUT:', rawHtml.substring(0, 300));
+            }
+
+            // Сначала очищаем потенциально поврежденные HTML-теги (частично экранированные)
+            // Заменяем экранированные угловые скобки обратно на обычные для правильного парсинга
+            let cleanedHtml = rawHtml.replace(/&lt;img/g, '<img').replace(/&lt;\/img&gt;/g, '</img>');
+            
+            // АГРЕССИВНО удаляем inline-стили и атрибуты размеров ИЗ ВСЕХ <img>
+            // Делаем это в несколько проходов для надежности
+            const beforeClean = cleanedHtml;
+            cleanedHtml = cleanedHtml.replace(/\sstyle="[^"]*"/gi, ''); // Удаляем style="..."
+            cleanedHtml = cleanedHtml.replace(/\swidth="[^"]*"/gi, '');  // Удаляем width="..."
+            cleanedHtml = cleanedHtml.replace(/\sheight="[^"]*"/gi, ''); // Удаляем height="..."
+            
+            if (beforeClean !== cleanedHtml && beforeClean.includes('hand-pink')) {
+                console.log('[РУКА ОБНАРУЖЕНА!] ДО очистки:', beforeClean);
+                console.log('[РУКА ОБНАРУЖЕНА!] ПОСЛЕ очистки:', cleanedHtml);
+            }
+            
+            // ВАЖНО: Добавляем закрывающие теги для всех img элементов
+            // В HTML5 <img> это самозакрывающийся тег, но для надежности парсинга лучше добавить />
+            cleanedHtml = cleanedHtml.replace(/<img([^>]*)>/g, '<img$1 />');
+            
+            const temp = document.createElement('div');
+            try {
+                temp.innerHTML = cleanedHtml;
+            } catch (e) {
+                // Если парсинг не удался, пробуем более агрессивную очистку
+                console.warn('Ошибка парсинга HTML, пробуем очистку:', e);
+                cleanedHtml = cleanedHtml.replace(/<[^>]*$/g, ''); // Убираем незакрытые теги в конце
+                temp.innerHTML = cleanedHtml;
+            }
+
+            const allowedImgClasses = new Set(['honey-club-emoji', 'youtube-emoji']);
+            const allowedImgPrefixes = [
+                './Emoji-Honey-Club/',
+                './youtube-emojis/',
+                'http://localhost:8080/Emoji-Honey-Club/',
+                'http://localhost:8080/youtube-emojis/',
+                'https://yt3.ggpht.com/'
+            ];
+
+            // Обрабатываем только IMG элементы, оставляя текст и другие элементы нетронутыми
+            const images = temp.querySelectorAll('img');
+            images.forEach((el) => {
+                    let src = el.getAttribute('src') || '';
+                    
+                    // Конвертируем старые YouTube URL в локальные пути
+                    if (src.startsWith('https://yt3.ggpht.com/')) {
+                        // Извлекаем имя файла из URL (последняя часть после последнего /)
+                        const urlParts = src.split('/');
+                        const filename = urlParts[urlParts.length - 1].split('?')[0]; // Убираем query параметры
+                        src = `./youtube-emojis/${filename}`;
+                        el.setAttribute('src', src);
+                    }
+                    
+                    const allowedSrc = allowedImgPrefixes.some(prefix => src.startsWith(prefix) || src.startsWith('./youtube-emojis/'));
+                    if (!allowedSrc) {
+                        el.replaceWith(document.createTextNode(el.alt || ''));
+                        return;
+                    }
+
+                    const classes = (el.getAttribute('class') || '').split(/\s+/).filter(Boolean);
+                    const hasAllowedClass = classes.some(cls => allowedImgClasses.has(cls));
+                    if (!hasAllowedClass) {
+                        el.className = 'youtube-emoji';
+                    } else {
+                        el.className = classes.filter(cls => allowedImgClasses.has(cls)).join(' ');
+                    }
+
+                    // Удаляем все атрибуты кроме разрешенных (включая style, width, height)
+                    Array.from(el.attributes).forEach(attr => {
+                        if (!['src', 'alt', 'title', 'class'].includes(attr.name)) {
+                            el.removeAttribute(attr.name);
+                        }
+                    });
+                    
+                    // Явно удаляем width/height на случай, если они как-то остались
+                    el.removeAttribute('width');
+                    el.removeAttribute('height');
+                    el.removeAttribute('style');
+            });
+            
+            // Обрабатываем SPAN элементы (флаги)
+            const spans = temp.querySelectorAll('span');
+            spans.forEach((el) => {
+                if (!el.classList.contains('flag-fallback')) {
+                    el.replaceWith(document.createTextNode(el.textContent));
+                } else {
+                    Array.from(el.attributes).forEach(attr => {
+                        if (attr.name !== 'class') {
+                            el.removeAttribute(attr.name);
+                        }
+                    });
+                }
+            });
+            
+            // Удаляем все остальные HTML теги, кроме разрешенных (img, span.flag-fallback, br)
+            // Важно: обрабатываем в обратном порядке, чтобы не потерять вложенные элементы
+            const allElements = Array.from(temp.querySelectorAll('*'));
+            for (let i = allElements.length - 1; i >= 0; i--) {
+                const el = allElements[i];
+                const tag = el.tagName;
+                if (tag !== 'IMG' && tag !== 'SPAN' && tag !== 'BR') {
+                    // Заменяем элемент на его дочерние узлы (сохраняя текст и img внутри)
+                    while (el.firstChild) {
+                        el.parentNode.insertBefore(el.firstChild, el);
+                    }
+                    el.remove();
+                } else if (tag === 'BR') {
+                    // Очищаем атрибуты у BR
+                    Array.from(el.attributes).forEach(attr => el.removeAttribute(attr.name));
+                }
+            }
+
+            // Возвращаем очищенный HTML
+            // Все очистки уже выполнены через DOM walker выше
+            const result = temp.innerHTML;
+            
+            // DEBUG: Логируем выходные данные
+            if (rawHtml.includes('Привет') || rawHtml.length > 200) {
+                console.log('[DEBUG] sanitizeEmojiHtml OUTPUT:', result.substring(0, 300));
+            }
+            
             return result;
         }
 
@@ -376,7 +1153,6 @@
             document.body.classList.add(`theme-${theme}`);
             currentTheme = theme;
             localStorage.setItem('vmix-theme', theme);
-            console.log(`🎨 Тема: ${THEMES[theme]}`);
         }
 
         function nextTheme() {
@@ -462,7 +1238,6 @@
                 this.startUpdating();
                 this.startCleanup();
                 
-                console.log('✅ vMix Chat Premium инициализирован');
             }
 
             async loadSettings() {
@@ -484,10 +1259,8 @@
                             applyTheme(settings.theme);
                         }
                         
-                        console.log('⚙️ Настройки загружены:', settings);
                     }
                 } catch (error) {
-                    console.log('⚠️ Используются настройки по умолчанию');
                 }
             }
 
@@ -500,7 +1273,6 @@
                         ? settings.chat_width 
                         : settings.chat_width + 'px';
                     container.style.width = width;
-                    console.log(`📏 Ширина: ${width}`);
                 }
                 
                 if (settings.chat_height) {
@@ -510,7 +1282,6 @@
                         : settings.chat_height + 'px';
                     container.style.height = height;
                     container.style.maxHeight = height; // На случай если есть конфликты
-                    console.log(`📏 Высота: ${height}`);
                 }
                 
                 if (settings.chat_position_x) {
@@ -519,7 +1290,6 @@
                         ? settings.chat_position_x 
                         : settings.chat_position_x + 'px';
                     container.style.left = posX;
-                    console.log(`↔️ Позиция X (слева): ${posX}`);
                 }
                 
                 if (settings.chat_position_y) {
@@ -528,7 +1298,6 @@
                         ? settings.chat_position_y 
                         : settings.chat_position_y + 'px';
                     container.style.top = posY;
-                    console.log(`↕️ Позиция Y (сверху): ${posY}`);
                 }
                 
                 // Размер шрифта
@@ -566,7 +1335,6 @@
                 // Сохраняем настройки для использования в addMessageToDOM
                 this.settings = settings;
                 
-                console.log('✨ Визуальные настройки применены');
             }
 
             async fetchMessages() {
@@ -616,6 +1384,9 @@
                 messageEl.dataset.id = message.id;
                 messageEl.dataset.addedAt = Date.now();
 
+                // Определяем имя для отображения (с префиксом канала если есть)
+                const displayName = message.author.display_name || message.author.name;
+
                 // Проверяем настройку выделения спонсоров
                 const highlightSponsors = this.settings?.highlight_sponsors !== false;
                 
@@ -630,8 +1401,32 @@
                     }
                 }
 
-                // Обрабатываем эмоджи
-                const processedText = convertEmojis(message.text);
+                // Обрабатываем эмоджи и санитизируем HTML (разрешаем только наши теги)
+                let rawText = message.text || '';
+                
+                // DEBUG: Логируем исходный текст
+                if (rawText.includes('Привет') || rawText.includes('<img')) {
+                    console.log('[DEBUG] Original message.text:', rawText.substring(0, 300));
+                }
+                
+                // Если текст уже содержит HTML теги эмоджи (из парсера), НЕ конвертируем его снова
+                // Иначе конвертируем коды эмоджи (типа :smile:) в HTML
+                let rawHtml;
+                if (rawText.includes('<img')) {
+                    // Текст уже содержит HTML - не трогаем
+                    rawHtml = rawText;
+                } else {
+                    // Конвертируем коды эмоджи в HTML/Unicode
+                    rawHtml = convertEmojis(rawText);
+                }
+                
+                // Санитизируем HTML (очищаем опасные теги, оставляем только img)
+                const processedText = sanitizeEmojiHtml(rawHtml);
+                
+                // DEBUG: Логируем обработанный текст
+                if (rawText.includes('Привет') || rawText.includes('<img')) {
+                    console.log('[DEBUG] Processed text:', processedText.substring(0, 300));
+                }
 
                 // Проверяем настройку отображения аватаров
                 const showAvatars = this.settings?.show_avatars !== false;
@@ -641,24 +1436,102 @@
                             alt="${this.escapeHtml(message.author.name)}">`
                     : '';
 
+                // Определяем канал для стилизации (только если нет роли)
+                let channelAttr = '';
+                const hasRole = message.author.is_owner || message.author.is_moderator || message.author.is_sponsor;
+                
+                if (message.source && message.source.channel_id && !hasRole) {
+                    channelAttr = `data-channel="${message.source.channel_id}"`;
+                }
+                
                 messageEl.innerHTML = `
                     ${avatarHtml}
                     <div class="message-content">
-                        <div class="username">${this.escapeHtml(message.author.name)}</div>
-                        <div class="text">${this.escapeHtml(processedText)}</div>
+                        <div class="username" ${channelAttr}>${this.escapeHtml(displayName)}</div>
+                        <div class="text">${processedText}</div>
                     </div>
                 `;
+
+                // ПРИНУДИТЕЛЬНО устанавливаем единый размер для ВСЕХ эмодзи
+                const textDiv = messageEl.querySelector('.text');
+                if (textDiv) {
+                    const allImages = textDiv.querySelectorAll('img');
+                    allImages.forEach((img, index) => {
+                        // Пропускаем аватары и badges
+                        if (!img.classList.contains('avatar') && 
+                            !img.className.includes('avatar') &&
+                            !img.className.includes('badge')) {
+                            
+                            // ПОЛНОСТЬЮ очищаем style и устанавливаем новый
+                            img.removeAttribute('style');
+                            img.removeAttribute('width');
+                            img.removeAttribute('height');
+                            
+                            // Специальные эмоджи канала (спонсорские) - большой размер
+                            if (img.classList.contains('honey-club-emoji')) {
+                                img.style.cssText = 'width: 144px !important; height: 144px !important; max-width: 144px !important; max-height: 144px !important; min-width: 144px !important; min-height: 144px !important; object-fit: contain !important; display: inline-block !important; vertical-align: middle !important; margin: 0 4px !important;';
+                            } else {
+                                // Обычные эмоджи - стандартный размер
+                                img.style.cssText = 'width: 72px !important; height: 72px !important; max-width: 72px !important; max-height: 72px !important; min-width: 72px !important; min-height: 72px !important; object-fit: contain !important; display: inline-block !important; vertical-align: middle !important; margin: 0 2px !important;';
+                            }
+                        }
+                    });
+                }
+
+                messageEl.title = 'Alt+Click — удалить сообщение';
+                messageEl.addEventListener('click', (event) => {
+                    if (event.altKey) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        this.removeMessage(message.id);
+                    }
+                });
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'remove-btn';
+                removeBtn.innerHTML = '&times;';
+                removeBtn.title = 'Удалить сообщение';
+                removeBtn.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.removeMessage(message.id);
+                });
+                messageEl.appendChild(removeBtn);
 
                 this.container.appendChild(messageEl);
 
                 // Ограничиваем количество сообщений в DOM
                 const allMessages = this.container.querySelectorAll('.message');
                 if (allMessages.length > this.maxMessages) {
-                    allMessages[0].remove();
+                    const firstMessage = allMessages[0];
+                    const removeId = firstMessage?.dataset?.id;
+                    if (removeId) {
+                        this.messages.delete(removeId);
+                    }
+                    firstMessage.remove();
                 }
 
                 // Прокрутка вниз
                 this.container.scrollTop = this.container.scrollHeight;
+                
+                // Флаги теперь используют простое текстовое представление
+            }
+
+
+            removeMessage(messageId) {
+                if (!messageId) return;
+
+                this.messages.delete(messageId);
+
+                const element = this.container.querySelector(`[data-id="${messageId}"]`);
+                if (element) {
+                    element.style.opacity = '0';
+                    element.style.transform = 'translateX(-25px)';
+                    setTimeout(() => {
+                        element.remove();
+                    }, 250);
+                }
             }
 
             cleanupOldMessages() {
@@ -700,11 +1573,65 @@
             }
         }
 
+        // Принудительное обновление для vMix
+        function forceVMixUpdate() {
+            // Добавляем уникальный параметр для обхода кэша vMix
+            const timestamp = Date.now();
+            document.title = `vMix Chat - ${timestamp}`;
+        }
+
+        function setManageMode(enabled) {
+            manageMode = enabled;
+            document.body.classList.toggle('manage-mode', manageMode);
+
+            const toggleBtn = document.getElementById('manage-toggle-btn');
+            if (toggleBtn) {
+                if (manageMode) {
+                    toggleBtn.classList.add('active');
+                    toggleBtn.title = 'Выключить режим удаления (Ctrl+Shift+D)';
+                } else {
+                    toggleBtn.classList.remove('active');
+                    toggleBtn.title = 'Включить режим удаления (Ctrl+Shift+D)';
+                }
+            }
+        }
+
+        function toggleManageMode() {
+            setManageMode(!manageMode);
+        }
+
+        function initManagementControls() {
+            const toggleBtn = document.getElementById('manage-toggle-btn');
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', () => toggleManageMode());
+            }
+
+            document.addEventListener('keydown', (event) => {
+                if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === 'd') {
+                    event.preventDefault();
+                    toggleManageMode();
+                }
+            });
+        }
+
         // Инициализация при загрузке
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Принудительное обновление для vMix
+            forceVMixUpdate();
+            
+            // Инициализируем флаги синхронно (без CORS проблем)
+            initFlags();
+            
+            // Загружаем YouTube эмоджи асинхронно
+            await loadYouTubeEmojis();
+            
+            initManagementControls();
+
+            // Инициализируем чат только после загрузки всех данных
             new vMixChat();
-            console.log('🎬 vMix Chat Premium готов к работе!');
-            console.log('⌨️ Горячие клавиши: Ctrl+T (темы), Ctrl+→ (следующая тема)');
+            
+            // Обновляем каждые 30 секунд для vMix
+            setInterval(forceVMixUpdate, 30000);
         });
 
         // Обработка ошибок

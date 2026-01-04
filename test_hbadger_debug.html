@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отладка Hbadger эмоджи</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #FF6347;
+            text-align: center;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .honey-club-emoji {
+            width: 56px;
+            height: 56px;
+            vertical-align: middle;
+            margin: 0 2px;
+            border-radius: 4px;
+            transition: transform 0.2s ease;
+        }
+        
+        .honey-club-emoji:hover {
+            transform: scale(1.3);
+        }
+        
+        .error-emoji {
+            border: 2px solid red !important;
+            background: #ffeeee;
+        }
+        
+        .test-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background: #FF6347;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #E5533D;
+        }
+        
+        .log {
+            background: #000;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        
+        .emoji-test {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 10px;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            align-items: center;
+        }
+        
+        .result {
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            min-height: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Отладка Hbadger эмоджи</h1>
+        
+        <div class="test-section">
+            <h2>📋 Тестирование конкретных кодов:</h2>
+            
+            <div class="emoji-test">
+                <strong>:HbadgerAngry:</strong>
+                <div class="result" id="test1"></div>
+            </div>
+            
+            <div class="emoji-test">
+                <strong>:HbadgerShout:</strong>
+                <div class="result" id="test2"></div>
+            </div>
+            
+            <div class="emoji-test">
+                <strong>:HbadgerHello:</strong>
+                <div class="result" id="test3"></div>
+            </div>
+            
+            <div class="emoji-test">
+                <strong>:HbadgerLove:</strong>
+                <div class="result" id="test4"></div>
+            </div>
+            
+            <button onclick="runTests()">🧪 Запустить тесты</button>
+            <button onclick="clearLog()">🗑️ Очистить лог</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>📝 Ручной тест:</h2>
+            <input type="text" class="test-input" id="manualInput" 
+                   placeholder="Введите текст с Hbadger эмоджи..." 
+                   value="Тест :HbadgerAngry: :HbadgerShout: :HbadgerHello: :HbadgerLove:">
+            <button onclick="testManual()">🔄 Конвертировать</button>
+            <div class="result" id="manualResult"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📊 Консоль отладки:</h2>
+            <div class="log" id="debugLog"></div>
+        </div>
+    </div>
+
+    <script>
+        // Honey Club эмоджи с отладкой
+        const HONEY_CLUB_EMOJIS = {
+            ':HbadgerAngry:': '<img src="./Emoji-Honey-Club/angry.png" class="honey-club-emoji" alt=":HbadgerAngry:" title="Злой" onerror="handleImageError(this)">',
+            ':HbadgerShout:': '<img src="./Emoji-Honey-Club/shout.png" class="honey-club-emoji" alt=":HbadgerShout:" title="Кричит" onerror="handleImageError(this)">',
+            ':HbadgerHello:': '<img src="./Emoji-Honey-Club/hello.png" class="honey-club-emoji" alt=":HbadgerHello:" title="Привет" onerror="handleImageError(this)">',
+            ':HbadgerLove:': '<img src="./Emoji-Honey-Club/love.png" class="honey-club-emoji" alt=":HbadgerLove:" title="Любовь" onerror="handleImageError(this)">',
+            ':HbadgerEvil:': '<img src="./Emoji-Honey-Club/evil.png" class="honey-club-emoji" alt=":HbadgerEvil:" title="Злобный" onerror="handleImageError(this)">',
+        };
+        
+        function log(message) {
+            const logEl = document.getElementById('debugLog');
+            const time = new Date().toLocaleTimeString();
+            logEl.innerHTML += `[${time}] ${message}\n`;
+            logEl.scrollTop = logEl.scrollHeight;
+            console.log(message);
+        }
+        
+        function handleImageError(img) {
+            img.classList.add('error-emoji');
+            img.title = `❌ Ошибка загрузки: ${img.src}`;
+            log(`❌ Не удалось загрузить изображение: ${img.src}`);
+        }
+        
+        function convertEmojis(text) {
+            let result = text;
+            let replacements = 0;
+            
+            log(`🔄 Начинаем конвертацию: "${text}"`);
+            
+            for (const [code, emoji] of Object.entries(HONEY_CLUB_EMOJIS)) {
+                const escapedCode = code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp(escapedCode, 'g');
+                const matches = (result.match(regex) || []).length;
+                
+                if (matches > 0) {
+                    log(`🍯 Найден код: ${code} (${matches} раз)`);
+                    result = result.replace(regex, emoji);
+                    replacements += matches;
+                } else {
+                    log(`⚪ Код не найден: ${code}`);
+                }
+            }
+            
+            log(`✅ Конвертация завершена. Заменено: ${replacements}`);
+            log(`📤 Результат: ${result}`);
+            
+            return result;
+        }
+        
+        function runTests() {
+            log('🧪 === НАЧАЛО ТЕСТИРОВАНИЯ ===');
+            
+            // Тест 1: :HbadgerAngry:
+            const test1 = convertEmojis(':HbadgerAngry:');
+            document.getElementById('test1').innerHTML = test1;
+            
+            // Тест 2: :HbadgerShout:
+            const test2 = convertEmojis(':HbadgerShout:');
+            document.getElementById('test2').innerHTML = test2;
+            
+            // Тест 3: :HbadgerHello:
+            const test3 = convertEmojis(':HbadgerHello:');
+            document.getElementById('test3').innerHTML = test3;
+            
+            // Тест 4: :HbadgerLove:
+            const test4 = convertEmojis(':HbadgerLove:');
+            document.getElementById('test4').innerHTML = test4;
+            
+            log('🏁 === ТЕСТИРОВАНИЕ ЗАВЕРШЕНО ===');
+        }
+        
+        function testManual() {
+            const input = document.getElementById('manualInput').value;
+            const result = convertEmojis(input);
+            document.getElementById('manualResult').innerHTML = result;
+        }
+        
+        function clearLog() {
+            document.getElementById('debugLog').innerHTML = '';
+        }
+        
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', () => {
+            log('🚀 Страница загружена');
+            log(`🍯 Загружено Honey Club эмоджи: ${Object.keys(HONEY_CLUB_EMOJIS).length}`);
+            log(`📋 Коды: ${Object.keys(HONEY_CLUB_EMOJIS).join(', ')}`);
+            
+            // Автоматический запуск тестов
+            setTimeout(runTests, 1000);
+        });
+    </script>
+</body>
+</html>

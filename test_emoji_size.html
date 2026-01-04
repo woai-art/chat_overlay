@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест размеров эмодзи</title>
+    <style>
+        body {
+            background: #1a1a2e;
+            color: white;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        
+        .test-message {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        
+        .text {
+            font-size: 1.1em;
+        }
+        
+        /* ТАКИЕ ЖЕ ПРАВИЛА КАК В vmix_simple.html */
+        .text img:not(.avatar):not([class*="avatar"]):not([class*="badge"]),
+        div.message div.text img,
+        img.youtube-emoji {
+            width: 280px !important;
+            height: 280px !important;
+            max-width: 280px !important;
+            max-height: 280px !important;
+            object-fit: contain !important;
+            vertical-align: middle !important;
+            border: 2px solid lime;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Тест размеров эмодзи</h1>
+    
+    <div class="test-message">
+        <h3>Тест 1: Эмодзи БЕЗ inline-стилей</h3>
+        <div class="text">
+            <img src="./youtube-emojis/KOxdr_z3A5h1Gb7kqnxqOCnbZrBmxI2B_tRQ453BhTWUhYAlpg5ZP8IKEBkcvRoY8grY91Q=w24-h24-c-k-nd" alt=":hand-pink-waving:" class="youtube-emoji">
+        </div>
+        <p>✅ Должна быть 280x280px с зеленой рамкой</p>
+    </div>
+    
+    <div class="test-message">
+        <h3>Тест 2: Эмодзи С inline-стилями (как от парсера)</h3>
+        <div class="text">
+            <img src="./youtube-emojis/KOxdr_z3A5h1Gb7kqnxqOCnbZrBmxI2B_tRQ453BhTWUhYAlpg5ZP8IKEBkcvRoY8grY91Q=w24-h24-c-k-nd" alt=":hand-pink-waving:" class="youtube-emoji" style="width:24px;height:24px;vertical-align:middle;">
+        </div>
+        <p>✅ Должна быть 280x280px с зеленой рамкой (НЕ 24px!)</p>
+    </div>
+    
+    <div class="test-message">
+        <h3>Тест 3: Эмодзи с огромными inline-стилями</h3>
+        <div class="text">
+            <img src="./youtube-emojis/KOxdr_z3A5h1Gb7kqnxqOCnbZrBmxI2B_tRQ453BhTWUhYAlpg5ZP8IKEBkcvRoY8grY91Q=w24-h24-c-k-nd" alt=":hand-pink-waving:" class="youtube-emoji" style="width:500px;height:500px;">
+        </div>
+        <p>✅ Должна быть 280x280px с зеленой рамкой (НЕ 500px!)</p>
+    </div>
+    
+    <hr>
+    <p><strong>Если все 3 руки одинакового размера (280x280px) - CSS работает!</strong></p>
+    <p><strong>Если разные размеры - проблема в vMix кэшировании</strong></p>
+</body>
+</html>
+

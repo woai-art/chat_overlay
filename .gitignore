@@ -33,3 +33,12 @@ Thumbs.db
 *.tmp
 *.bak
 
+# OAuth секреты и токены (НИКОГДА не коммитить!)
+client_secret.json
+youtube_oauth_token.json
+youtube_cookies.txt
+
+# Временные файлы мульти-чата
+temp_messages_*.json
+multichat_status.txt
+

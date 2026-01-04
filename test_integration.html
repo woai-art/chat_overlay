@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест интеграции эмоджи в чат</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #FF6347;
+            text-align: center;
+        }
+        
+        .message {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 12px;
+            background: linear-gradient(45deg, #FF6347, #FFA500);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .message-content {
+            flex: 1;
+        }
+        
+        .username {
+            font-weight: bold;
+            color: #FF6347;
+            margin-bottom: 4px;
+        }
+        
+        .text {
+            line-height: 1.4;
+        }
+        
+        .honey-club-emoji {
+            width: 56px;
+            height: 56px;
+            vertical-align: middle;
+            margin: 0 2px;
+            border-radius: 4px;
+            transition: transform 0.2s ease;
+        }
+        
+        .honey-club-emoji:hover {
+            transform: scale(1.3);
+        }
+        
+        .test-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background: #FF6347;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #E5533D;
+        }
+        
+        .emoji-list {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍯 Тест интеграции эмоджи Honey Club</h1>
+        
+        <div class="emoji-list">
+            <strong>Доступные персональные эмоджи:</strong><br>
+            :angry: :hello: :love: :cute: :Kaif: :evil: :monster: :HurryUp: :Zlost: :dislike: :comeon: :hugs: :shout: :hungover: :vomit:
+        </div>
+        
+        <input type="text" class="test-input" id="messageInput" placeholder="Введите сообщение с эмоджи..." value="Привет :hello: Как дела? :love: Не злись :angry: Будь милым :cute: :Kaif:">
+        
+        <button onclick="addMessage()">📤 Добавить сообщение</button>
+        <button onclick="clearChat()">🗑️ Очистить чат</button>
+        
+        <div id="chat-container">
+            <!-- Сообщения будут добавляться сюда -->
+        </div>
+    </div>
+
+    <script>
+        // Персональные эмоджи канала Honey Club
+        const HONEY_CLUB_EMOJIS = {
+            ':angry:': '<img src="./Emoji-Honey-Club/angry.png" class="honey-club-emoji" alt=":angry:" title="Злой">',
+            ':hello:': '<img src="./Emoji-Honey-Club/hello.png" class="honey-club-emoji" alt=":hello:" title="Привет">',
+            ':love:': '<img src="./Emoji-Honey-Club/love.png" class="honey-club-emoji" alt=":love:" title="Любовь">',
+            ':cute:': '<img src="./Emoji-Honey-Club/сute.png" class="honey-club-emoji" alt=":cute:" title="Милый">',
+            ':Kaif:': '<img src="./Emoji-Honey-Club/Kaif.png" class="honey-club-emoji" alt=":Kaif:" title="Кайф">',
+            ':evil:': '<img src="./Emoji-Honey-Club/evil.png" class="honey-club-emoji" alt=":evil:" title="Злобный">',
+            ':monster:': '<img src="./Emoji-Honey-Club/monster.png" class="honey-club-emoji" alt=":monster:" title="Монстр">',
+            ':HurryUp:': '<img src="./Emoji-Honey-Club/HurryUp.png" class="honey-club-emoji" alt=":HurryUp:" title="Торопись">',
+            ':Zlost:': '<img src="./Emoji-Honey-Club/Zlost.png" class="honey-club-emoji" alt=":Zlost:" title="Злость">',
+            ':dislike:': '<img src="./Emoji-Honey-Club/dislike.png" class="honey-club-emoji" alt=":dislike:" title="Не нравится">',
+            ':comeon:': '<img src="./Emoji-Honey-Club/comeon.png" class="honey-club-emoji" alt=":comeon:" title="Давай же">',
+            ':hugs:': '<img src="./Emoji-Honey-Club/hugs.png" class="honey-club-emoji" alt=":hugs:" title="Обнимашки">',
+            ':shout:': '<img src="./Emoji-Honey-Club/shout.png" class="honey-club-emoji" alt=":shout:" title="Кричит">',
+            ':hungover:': '<img src="./Emoji-Honey-Club/hungover.png" class="honey-club-emoji" alt=":hungover:" title="С похмелья">',
+            ':vomit:': '<img src="./Emoji-Honey-Club/vomit.png" class="honey-club-emoji" alt=":vomit:" title="Тошнит">'
+        };
+        
+        // Базовые эмоджи
+        const BASIC_EMOJIS = {
+            ':)': '😊',
+            ':D': '😄',
+            ':heart:': '❤️',
+            ':fire:': '🔥',
+            ':thumbsup:': '👍'
+        };
+        
+        function convertEmojis(text) {
+            let result = text;
+            
+            // Сначала персональные эмоджи (приоритет)
+            for (const [code, emoji] of Object.entries(HONEY_CLUB_EMOJIS)) {
+                const escapedCode = code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                result = result.replace(new RegExp(escapedCode, 'g'), emoji);
+            }
+            
+            // Затем базовые эмоджи
+            for (const [code, emoji] of Object.entries(BASIC_EMOJIS)) {
+                const escapedCode = code.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                result = result.replace(new RegExp(escapedCode, 'g'), emoji);
+            }
+            
+            return result;
+        }
+        
+        function addMessage() {
+            const input = document.getElementById('messageInput');
+            const container = document.getElementById('chat-container');
+            
+            const messageText = input.value.trim();
+            if (!messageText) return;
+            
+            const processedText = convertEmojis(messageText);
+            
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message';
+            messageElement.innerHTML = `
+                <div class="avatar">HC</div>
+                <div class="message-content">
+                    <div class="username">HoneyClub_User</div>
+                    <div class="text">${processedText}</div>
+                </div>
+            `;
+            
+            container.appendChild(messageElement);
+            
+            // Прокрутка вниз
+            container.scrollTop = container.scrollHeight;
+            
+            // Очистка поля ввода
+            input.value = '';
+            input.focus();
+        }
+        
+        function clearChat() {
+            document.getElementById('chat-container').innerHTML = '';
+        }
+        
+        // Обработка Enter
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addMessage();
+            }
+        });
+        
+        // Добавляем тестовое сообщение при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                addMessage();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

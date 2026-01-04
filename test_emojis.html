@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест Эмоджи Honey Club</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #FF6347;
+            text-align: center;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .emoji-item {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        
+        .honey-club-emoji {
+            width: 56px;
+            height: 56px;
+            vertical-align: middle;
+            margin: 5px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background: #FF6347;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #E5533D;
+        }
+        
+        .result {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-top: 10px;
+            min-height: 50px;
+        }
+        
+        .code {
+            font-family: monospace;
+            background: #f0f0f0;
+            padding: 2px 5px;
+            border-radius: 3px;
+            color: #d63384;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍯 Тест Эмоджи Honey Club</h1>
+        
+        <div class="test-section">
+            <h2>📋 Доступные эмоджи:</h2>
+            <div class="emoji-grid" id="emojiGrid">
+                <div class="emoji-item">
+                    <img src="./Emoji-Honey-Club/angry.png" class="honey-club-emoji" alt=":angry:"><br>
+                    <span class="code">:angry:</span><br>
+                    <small>Злой</small>
+                </div>
+                <div class="emoji-item">
+                    <img src="./Emoji-Honey-Club/hello.png" class="honey-club-emoji" alt=":hello:"><br>
+                    <span class="code">:hello:</span><br>
+                    <small>Привет</small>
+                </div>
+                <div class="emoji-item">
+                    <img src="./Emoji-Honey-Club/love.png" class="honey-club-emoji" alt=":love:"><br>
+                    <span class="code">:love:</span><br>
+                    <small>Любовь</small>
+                </div>
+                <div class="emoji-item">
+                    <img src="./Emoji-Honey-Club/сute.png" class="honey-club-emoji" alt=":cute:"><br>
+                    <span class="code">:cute:</span><br>
+                    <small>Милый</small>
+                </div>
+                <div class="emoji-item">
+                    <img src="./Emoji-Honey-Club/Kaif.png" class="honey-club-emoji" alt=":Kaif:"><br>
+                    <span class="code">:Kaif:</span><br>
+                    <small>Кайф</small>
+                </div>
+                <div class="emoji-item">
+                    <img src="./Emoji-Honey-Club/evil.png" class="honey-club-emoji" alt=":evil:"><br>
+                    <span class="code">:evil:</span><br>
+                    <small>Злобный</small>
+                </div>
+                <div class="emoji-item">
+                    <img src="./Emoji-Honey-Club/monster.png" class="honey-club-emoji" alt=":monster:"><br>
+                    <span class="code">:monster:</span><br>
+                    <small>Монстр</small>
+                </div>
+                <div class="emoji-item">
+                    <img src="./Emoji-Honey-Club/HurryUp.png" class="honey-club-emoji" alt=":HurryUp:"><br>
+                    <span class="code">:HurryUp:</span><br>
+                    <small>Торопись</small>
+                </div>
+                <div class="emoji-item">
+                    <img src="./Emoji-Honey-Club/Zlost.png" class="honey-club-emoji" alt=":Zlost:"><br>
+                    <span class="code">:Zlost:</span><br>
+                    <small>Злость</small>
+                </div>
+                <div class="emoji-item">
+                    <img src="./Emoji-Honey-Club/dislike.png" class="honey-club-emoji" alt=":dislike:"><br>
+                    <span class="code">:dislike:</span><br>
+                    <small>Не нравится</small>
+                </div>
+                <div class="emoji-item">
+                    <img src="./Emoji-Honey-Club/comeon.png" class="honey-club-emoji" alt=":comeon:"><br>
+                    <span class="code">:comeon:</span><br>
+                    <small>Давай же</small>
+                </div>
+                <div class="emoji-item">
+                    <img src="./Emoji-Honey-Club/hugs.png" class="honey-club-emoji" alt=":hugs:"><br>
+                    <span class="code">:hugs:</span><br>
+                    <small>Обнимашки</small>
+                </div>
+                <div class="emoji-item">
+                    <img src="./Emoji-Honey-Club/shout.png" class="honey-club-emoji" alt=":shout:"><br>
+                    <span class="code">:shout:</span><br>
+                    <small>Кричит</small>
+                </div>
+                <div class="emoji-item">
+                    <img src="./Emoji-Honey-Club/hungover.png" class="honey-club-emoji" alt=":hungover:"><br>
+                    <span class="code">:hungover:</span><br>
+                    <small>С похмелья</small>
+                </div>
+                <div class="emoji-item">
+                    <img src="./Emoji-Honey-Club/vomit.png" class="honey-club-emoji" alt=":vomit:"><br>
+                    <span class="code">:vomit:</span><br>
+                    <small>Тошнит</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🧪 Тестирование конвертации:</h2>
+            <textarea id="testInput" placeholder="Введите текст с кодами эмоджи, например: Привет :hello: Как дела? :love: Не злись :angry:">Привет :hello: Как дела? :love: Не злись :angry: Будь милым :cute: :Kaif:</textarea>
+            <br>
+            <button onclick="convertText()">🔄 Конвертировать</button>
+            <button onclick="addRandomEmoji()">🎲 Добавить случайный</button>
+            <button onclick="clearText()">🗑️ Очистить</button>
+            
+            <div class="result" id="result">
+                Результат появится здесь...
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>ℹ️ Информация:</h2>
+            <p><strong>Статус:</strong> <span id="status">Проверяем...</span></p>
+            <p><strong>Загружено эмоджи:</strong> <span id="emojiCount">15</span></p>
+            <p><strong>Режим:</strong> Channel (персональные эмоджи канала)</p>
+        </div>
+    </div>
+
+    <script>
+        // Данные эмоджи
+        const emojiData = {
+            ':angry:': { file: 'angry.png', name: 'Злой' },
+            ':hello:': { file: 'hello.png', name: 'Привет' },
+            ':love:': { file: 'love.png', name: 'Любовь' },
+            ':cute:': { file: 'сute.png', name: 'Милый' },
+            ':Kaif:': { file: 'Kaif.png', name: 'Кайф' },
+            ':evil:': { file: 'evil.png', name: 'Злобный' },
+            ':monster:': { file: 'monster.png', name: 'Монстр' },
+            ':HurryUp:': { file: 'HurryUp.png', name: 'Торопись' },
+            ':Zlost:': { file: 'Zlost.png', name: 'Злость' },
+            ':dislike:': { file: 'dislike.png', name: 'Не нравится' },
+            ':comeon:': { file: 'comeon.png', name: 'Давай же' },
+            ':hugs:': { file: 'hugs.png', name: 'Обнимашки' },
+            ':shout:': { file: 'shout.png', name: 'Кричит' },
+            ':hungover:': { file: 'hungover.png', name: 'С похмелья' },
+            ':vomit:': { file: 'vomit.png', name: 'Тошнит' }
+        };
+        
+        // Проверка доступности файлов
+        function checkEmojiFiles() {
+            let loadedCount = 0;
+            const totalCount = Object.keys(emojiData).length;
+            
+            for (const [code, data] of Object.entries(emojiData)) {
+                const img = new Image();
+                img.onload = function() {
+                    loadedCount++;
+                    updateStatus(loadedCount, totalCount);
+                };
+                img.onerror = function() {
+                    console.error(`Не удалось загрузить: ${data.file}`);
+                };
+                img.src = `./Emoji-Honey-Club/${data.file}`;
+            }
+        }
+        
+        function updateStatus(loaded, total) {
+            const statusEl = document.getElementById('status');
+            const countEl = document.getElementById('emojiCount');
+            
+            if (loaded === total) {
+                statusEl.textContent = '✅ Все эмоджи загружены успешно!';
+                statusEl.style.color = 'green';
+            } else {
+                statusEl.textContent = `⏳ Загружается... ${loaded}/${total}`;
+                statusEl.style.color = 'orange';
+            }
+            
+            countEl.textContent = `${loaded}/${total}`;
+        }
+        
+        // Конвертация текста
+        function convertText() {
+            const input = document.getElementById('testInput').value;
+            const result = document.getElementById('result');
+            
+            let convertedText = input;
+            
+            // Заменяем коды эмоджи на изображения
+            for (const [code, data] of Object.entries(emojiData)) {
+                const regex = new RegExp(escapeRegExp(code), 'g');
+                const imgTag = `<img src="./Emoji-Honey-Club/${data.file}" class="honey-club-emoji" alt="${code}" title="${data.name}">`;
+                convertedText = convertedText.replace(regex, imgTag);
+            }
+            
+            result.innerHTML = convertedText;
+        }
+        
+        // Добавление случайного эмоджи
+        function addRandomEmoji() {
+            const codes = Object.keys(emojiData);
+            const randomCode = codes[Math.floor(Math.random() * codes.length)];
+            const input = document.getElementById('testInput');
+            input.value += ' ' + randomCode;
+        }
+        
+        // Очистка текста
+        function clearText() {
+            document.getElementById('testInput').value = '';
+            document.getElementById('result').innerHTML = 'Результат появится здесь...';
+        }
+        
+        // Экранирование регулярных выражений
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+        
+        // Добавление эмоджи по клику
+        document.addEventListener('DOMContentLoaded', function() {
+            // Добавляем обработчики кликов на эмоджи
+            document.querySelectorAll('.emoji-item').forEach(item => {
+                item.style.cursor = 'pointer';
+                item.addEventListener('click', function() {
+                    const code = this.querySelector('.code').textContent;
+                    const input = document.getElementById('testInput');
+                    input.value += ' ' + code;
+                    input.focus();
+                });
+            });
+            
+            // Проверяем загрузку файлов
+            checkEmojiFiles();
+        });
+    </script>
+</body>
+</html>

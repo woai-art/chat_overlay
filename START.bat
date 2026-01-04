@@ -1,230 +1,274 @@
-@echo off
+﻿@echo off
+setlocal enabledelayedexpansion
 chcp 65001 >nul
 cd /d "%~dp0"
+
+REM Deaktiviruem Anaconda esli ona aktivna
+if defined CONDA_DEFAULT_ENV (
+    echo Deaktivaciya Anaconda...
+    call conda deactivate 2>nul
+)
+
+REM Udalяem Anaconda iz PATH dlya etoy sessii
+set "PATH=%PATH:C:\ProgramData\anaconda3;=%"
+set "PATH=%PATH:C:\ProgramData\anaconda3\Scripts;=%"
+set "PATH=%PATH:C:\ProgramData\Anaconda3;=%"
+set "PATH=%PATH:C:\ProgramData\Anaconda3\Scripts;=%"
+set "PATH=%PATH:%USERPROFILE%\anaconda3;=%"
+set "PATH=%PATH:%USERPROFILE%\anaconda3\Scripts;=%"
+set "PATH=%PATH:%USERPROFILE%\Anaconda3;=%"
+set "PATH=%PATH:%USERPROFILE%\Anaconda3\Scripts;=%"
+
+REM Dobavlyaem venv v PATH PERVIM
+set "PATH=%~dp0venv\Scripts;%PATH%"
 
 :MENU
 cls
 echo.
 echo ==========================================
-echo     🎬 YOUTUBE CHAT ДЛЯ VMIX
+echo     YOUTUBE CHAT DLY VMIX
 echo ==========================================
 echo.
-echo Выберите действие:
+echo Viberite deystvie:
 echo.
-echo   1. 🚀 Полный запуск (Сервер + Парсер + GUI)
-echo   2. 🌐 Только веб-сервер
-echo   3. 🎨 Демонстрация тем
-echo   4. 🔧 Только GUI настроек
-echo   5. 🎭 Тест спонсоров (симуляция)
-echo   6. 📺 Открыть чат в браузере
-echo   7. 🛑 Остановить все процессы
-echo   8. ❌ Выход
+echo   1. Polniy zapusk (Server + Parser + GUI)
+echo   2. OAuth avtorizaciya YouTube (NOVOE!)
+echo   3. Tolko veb-server
+echo   4. Tolko GUI nastroek
+echo   5. Otkrit chat v brauzere
+echo   6. Proverka zapushchennih processov
+echo   7. Sbrosit nastroyki chata (esli GUI ne zapuskaetsya)
+echo   8. Ostanovit vse processi
+echo   9. Vihod
 echo.
 echo ==========================================
 echo.
-set /p choice="Введите номер (1-8): "
+set /p choice="Vvedite nomer (1-9): "
 
-if "%choice%"=="1" goto FULL_START
-if "%choice%"=="2" goto SERVER_ONLY
-if "%choice%"=="3" goto THEME_DEMO
-if "%choice%"=="4" goto GUI_ONLY
-if "%choice%"=="5" goto TEST_SPONSORS
-if "%choice%"=="6" goto OPEN_CHAT
-if "%choice%"=="7" goto STOP_ALL
-if "%choice%"=="8" goto EXIT
-
-echo.
-echo ❌ Неверный выбор. Попробуйте снова.
-timeout /t 2 /nobreak >nul
+if "!choice!"=="1" goto FULL_START
+if "!choice!"=="2" goto OAUTH_AUTH
+if "!choice!"=="3" goto SERVER_ONLY
+if "!choice!"=="4" goto GUI_ONLY
+if "!choice!"=="5" goto OPEN_BROWSER
+if "!choice!"=="6" goto CHECK_PARSERS
+if "!choice!"=="7" goto RESET_SETTINGS
+if "!choice!"=="8" goto KILL_ALL
+if "!choice!"=="9" goto END
 goto MENU
+
+:OAUTH_AUTH
+echo.
+echo ==========================================
+echo      OAUTH AVTORIZACIYA YOUTUBE
+echo ==========================================
+echo.
+
+if not exist client_secret.json (
+    echo VNIMANIE: Fayl client_secret.json ne nayden!
+    echo.
+    echo Dlya OAuth nuzhno sozdat credentials v Google Cloud Console.
+    echo Instrukciya v fayle: GOOGLE_OAUTH_SETUP.md
+    echo.
+    set /p open_console="Otkrit Google Console? (y/n): "
+    if /i "!open_console!"=="y" (
+        echo.
+        echo Otkritie Google Console...
+        start "" "https://console.cloud.google.com/"
+        start "" "QUICK_OAUTH_GUIDE.txt"
+        echo.
+        echo Posle sozdaniya client_secret.json zapustite etu opciyu snova
+        echo.
+        goto END
+    )
+    echo.
+    echo Bez client_secret.json OAuth ne budet rabotat!
+    echo.
+    goto END
+)
+
+echo Fayl client_secret.json nayd
+
+en!
+echo.
+echo Otkroetsya brauzer dlya avtorizacii.
+echo Voydite v YouTube/Google i razreshite dostup.
+echo.
+pause
+
+REM Absolutniy put k proektu
+set PROJECT_DIR=%~dp0
+set VENV_PYTHON=%PROJECT_DIR%venv\Scripts\python.exe
+
+echo.
+echo Zapusk OAuth avtorizacii...
+echo.
+
+"%VENV_PYTHON%" youtube_auth.py
+
+echo.
+if exist youtube_oauth_token.json (
+    echo Avtorizaciya uspeshna!
+    echo Teper mozhete zapuskat parser ^(opciya 1^)
+) else (
+    echo Avtorizaciya ne zavershena
+)
+echo.
+goto END
 
 :FULL_START
 echo.
 echo ==========================================
-echo      🚀 ПОЛНЫЙ ЗАПУСК СИСТЕМЫ
+echo      POLNIY ZAPUSK SISTEMI
 echo ==========================================
 echo.
-echo Запускаются все компоненты:
-echo   - HTTP сервер (порт 8080)
-echo   - Парсер YouTube чата
-echo   - GUI для настроек
-echo   - Автоматически откроется чат в браузере
+
+if not exist youtube_oauth_token.json (
+    echo VNIMANIE: OAuth avtorizaciya ne proydena!
+    echo.
+    echo Dlya raboti parsera nuzhna OAuth avtorizaciya.
+    echo.
+    set /p oauth_choice="Proyti avtorizaciyu seychas? (y/n): "
+    if /i "!oauth_choice!"=="y" (
+        goto OAUTH_AUTH
+    )
+    echo.
+    echo Parser mozhet ne rabotat bez OAuth!
+    echo Rekomenduetsya proyti avtorizaciyu ^(opciya 2^)
+    echo.
+    pause
+)
+
+echo Zapuskayutsya vse komponenti:
+echo   - HTTP server ^(port 8080^)
+echo   - Parser YouTube chata ^(s OAuth^)
+echo   - GUI dlya nastroek
 echo.
 
-call venv\Scripts\activate.bat
+REM Sohranayem absolutniy put k proektu
+set PROJECT_DIR=%~dp0
+set VENV_PYTHON=%PROJECT_DIR%venv\Scripts\python.exe
 
-echo ✅ Виртуальное окружение активировано
+echo Virtualnoe okruzhenie: %VENV_PYTHON%
 echo.
 
-echo 🌐 Запуск HTTP сервера...
-start "YouTube Chat - HTTP Server" cmd /k "python simple_server.py 8080"
+echo Zapuskayutsya vse komponenti:
+echo   - HTTP server ^(port 8080^)
+echo   - GUI dlya nastroek
+echo.
 
-echo ⏳ Ожидание запуска сервера...
+REM Zapusk HTTP servera cherez venv Python
+echo Zapusk HTTP servera...
+start "YouTube Chat - HTTP Server" cmd /k "%VENV_PYTHON%" simple_server.py 8080
+
+echo Ozhidanie zapuska servera...
 timeout /t 3 /nobreak >nul
 
-echo 🔧 Запуск GUI настроек...
-start "YouTube Chat - GUI" cmd /k "python chat_gui_simple.py"
+REM Zapusk GUI cherez venv Python
+echo Zapusk GUI nastroek...
+start "YouTube Chat - GUI" cmd /k "%VENV_PYTHON%" chat_gui_simple.py
 
-echo ⏳ Ожидание запуска GUI...
+echo Ozhidanie zapuska GUI...
 timeout /t 2 /nobreak >nul
 
-echo 🌐 Открытие чата в браузере...
+echo Otkritie chata v brauzere...
 start "" "http://localhost:8080/vmix_simple.html"
 
 echo.
-echo ✅ Система запущена!
+echo Sistema zapushchena!
 echo.
-echo 📋 Что делать дальше:
-echo   1. В GUI введите URL YouTube трансляции
-echo   2. Нажмите "Запустить парсер" в GUI
-echo   3. Используйте http://localhost:8080/vmix_simple.html в vMix
+echo Watchdog rabotaet v fone i avtomaticheski ubivaet processi Anaconda.
 echo.
-echo 🎨 Смена тем: Ctrl+T в чате или кнопка "🎨"
-echo   5 красивых тем: Барби, Киберпанк, Минимализм, Темная, Ретро
+echo.
+echo Chto delat dalshe:
+echo   1. V GUI vvedite URL YouTube translyacii
+echo   2. Nazhmite "Zapustit parser" v GUI
+echo   3. Ispolzuyte http://localhost:8080/vmix_simple.html v vMix
 echo.
 goto END
 
 :SERVER_ONLY
 echo.
 echo ==========================================
-echo        🌐 ЗАПУСК ВЕБА-СЕРВЕРА
+echo        ZAPUSK VEB-SERVERA
 echo ==========================================
 echo.
 
-call venv\Scripts\activate.bat
+REM Absolutniy put k proektu
+set PROJECT_DIR=%~dp0
+set VENV_PYTHON=%PROJECT_DIR%venv\Scripts\python.exe
 
-echo ✅ Виртуальное окружение активировано
-echo 🌐 Запуск HTTP сервера на порту 8080...
+echo Virtualnoe okruzhenie aktivirovano
+echo Zapusk HTTP servera na portu 8080...
 echo.
-echo Доступные ссылки:
-echo   📺 vMix чат (Premium): http://localhost:8080/vmix_simple.html
-echo   📝 Сообщения (JSON):   http://localhost:8080/messages.json
-echo   ⚙️ Настройки:          http://localhost:8080/chat_settings.json
+echo Dostupnie ssilki:
+echo   vMix chat: http://localhost:8080/vmix_simple.html
+echo   Soobshcheniya JSON: http://localhost:8080/messages.json
 echo.
-echo Для остановки нажмите Ctrl+C
-echo.
-
-python simple_server.py 8080
-goto END
-
-:THEME_DEMO
-echo.
-echo ==========================================
-echo        🎨 ДЕМОНСТРАЦИЯ ТЕМ
-echo ==========================================
+echo Dlya ostanovki nazhmite Ctrl+C
 echo.
 
-call venv\Scripts\activate.bat
-
-echo ✅ Виртуальное окружение активировано
-echo 🌐 Запуск HTTP сервера...
-
-start "HTTP Server" cmd /c "python simple_server.py 8080"
-
-echo ⏳ Ожидание запуска сервера...
-timeout /t 3 /nobreak >nul
-
-echo 🎨 Открытие демонстрации тем...
-start "" "http://localhost:8080/theme_demo.html"
-
-echo.
-echo ✅ Демонстрация тем запущена!
-echo.
-echo 🎮 Горячие клавиши:
-echo   Ctrl + T     - Селектор тем
-echo   Ctrl + ←/→   - Переключение тем
-echo   Клик по теме - Применить тему
-echo.
+"%VENV_PYTHON%" simple_server.py 8080
 goto END
 
 :GUI_ONLY
 echo.
 echo ==========================================
-echo        🔧 ЗАПУСК GUI НАСТРОЕК
+echo        ZAPUSK GUI NASTROEK
 echo ==========================================
 echo.
 
-call venv\Scripts\activate.bat
+REM Absolutniy put k proektu
+set PROJECT_DIR=%~dp0
+set VENV_PYTHON=%PROJECT_DIR%venv\Scripts\python.exe
 
-echo ✅ Виртуальное окружение активировано
-echo 🔧 Запуск GUI настроек...
+echo Virtualnoe okruzhenie aktivirovano
+echo Zapusk GUI nastroek...
 echo.
 
-python chat_gui_simple.py
+"%VENV_PYTHON%" chat_gui_simple.py
 goto END
 
-:TEST_SPONSORS
+:OPEN_BROWSER
 echo.
-echo ==========================================
-echo      🎭 ТЕСТ СПОНСОРОВ (СИМУЛЯЦИЯ)
-echo ==========================================
-echo.
-
-call venv\Scripts\activate.bat
-
-echo ✅ Виртуальное окружение активировано
-echo 🌐 Запуск HTTP сервера...
-
-start "HTTP Server" cmd /c "python simple_server.py 8080"
-
-echo ⏳ Ожидание запуска сервера...
-timeout /t 3 /nobreak >nul
-
-echo 🎭 Запуск симулятора спонсоров...
-echo 📊 Будет создано примерно 12 сообщений в минуту
-echo.
-
-python simulate_sponsors.py 60 12
-
-echo.
-echo ✅ Симуляция завершена!
-echo 🌐 Откройте http://localhost:8080/chat_local.html для просмотра
-echo.
+echo Otkritie chata v brauzere...
+start "" "http://localhost:8080/vmix_simple.html"
 goto END
 
-:OPEN_CHAT
+:CHECK_PARSERS
 echo.
 echo ==========================================
-echo        📺 ОТКРЫТИЕ ЧАТА В БРАУЗЕРЕ
+echo      PROVERKA ZAPUSHCHENNIH PROCESSOV
+echo ==========================================
+
+:RESET_SETTINGS
+echo.
+echo ==========================================
+echo      SBROS NASTROEK CHATA
 echo ==========================================
 echo.
-
-echo 🌐 Открытие основного чата...
-start "" "http://localhost:8080/chat_local.html"
-
-echo ✅ Чат открыт в браузере!
+echo VNIMANIE: Etot skript sozdayet rezervnuyu
+echo kopiyu i ochishchaet vash fayl nastroek
+echo (chat_settings.json).
 echo.
-echo 💡 Если страница не загружается:
-echo   1. Запустите сначала веб-сервер (опция 2)
-echo   2. Проверьте, что порт 8080 свободен
-echo.
+call "%PROJECT_DIR%RESET_SETTINGS.bat"
 goto END
 
-:STOP_ALL
+:KILL_ALL
 echo.
 echo ==========================================
-echo        🛑 ОСТАНОВКА ВСЕХ ПРОЦЕССОВ
+echo      OSTANOVKA VSEH PROCESSOV
 echo ==========================================
 echo.
-
-echo 🔍 Поиск и остановка процессов YouTube Chat...
-
-taskkill /f /fi "WINDOWTITLE eq YouTube Chat - HTTP Server" 2>nul
-taskkill /f /fi "WINDOWTITLE eq YouTube Chat - GUI" 2>nul
-taskkill /f /fi "WINDOWTITLE eq YouTube Chat - Parser" 2>nul
-taskkill /f /fi "WINDOWTITLE eq HTTP Server" 2>nul
-
-echo ✅ Все процессы остановлены!
-echo.
+call "%PROJECT_DIR%KILL_ALL_PARSERS.bat"
 goto END
 
 :EXIT
 echo.
-echo 👋 До свидания!
+echo Do svidaniya!
 exit /b 0
 
 :END
 echo.
-echo Нажмите любую клавишу для возврата в меню...
+echo Nazhmite lubuyu klavishu dlya vozvrata v menyu...
 pause >nul
-goto MENU 
+goto MENU
