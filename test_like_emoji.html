@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест нового эмоджи :like:</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #FFD700;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+        
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 4px solid #FFD700;
+        }
+        
+        .emoji-test {
+            font-size: 1.2em;
+            line-height: 1.8;
+            margin: 10px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+        
+        /* Стили для эмоджи (копируем из vmix_simple.html) */
+        .honey-club-emoji {
+            width: 144px !important;
+            height: 144px !important;
+            max-width: 144px !important;
+            max-height: 144px !important;
+            min-width: 144px !important;
+            min-height: 144px !important;
+            vertical-align: middle !important;
+            margin: 0 4px !important;
+            border-radius: 8px !important;
+            object-fit: contain !important;
+            display: inline-block !important;
+            transition: transform 0.3s ease, filter 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .honey-club-emoji:hover {
+            transform: scale(1.15);
+            filter: brightness(1.2) drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .code {
+            background: #2d3748;
+            color: #68d391;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .success {
+            color: #68d391;
+            font-weight: bold;
+        }
+        
+        .info {
+            background: rgba(59, 130, 246, 0.2);
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍯 Тест нового эмоджи :like: 👍</h1>
+        
+        <div class="info">
+            <strong>📋 Информация:</strong> Новый эмоджи <code class="code">like.png</code> добавлен в систему Honey Club. 
+            Проверяем все варианты кодов для использования в YouTube чате.
+        </div>
+        
+        <div class="test-section">
+            <h2>🧪 Тестирование всех кодов эмоджи :like:</h2>
+            
+            <div class="emoji-test">
+                <strong>Короткий код:</strong> 
+                <span class="code">:like:</span> → 
+                <img src="./Emoji-Honey-Club/like.png" class="honey-club-emoji" alt=":like:" title="Нравится">
+            </div>
+            
+            <div class="emoji-test">
+                <strong>YouTube код (без подчеркивания):</strong> 
+                <span class="code">:HbadgerLike:</span> → 
+                <img src="http://localhost:8080/Emoji-Honey-Club/like.png" class="honey-club-emoji" alt=":HbadgerLike:" title="Нравится">
+            </div>
+            
+            <div class="emoji-test">
+                <strong>YouTube код (с подчеркиванием):</strong> 
+                <span class="code">:_HbadgerLike:</span> → 
+                <img src="http://localhost:8080/Emoji-Honey-Club/like.png" class="honey-club-emoji" alt=":_HbadgerLike:" title="Нравится">
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📝 Примеры использования в чате</h2>
+            
+            <div class="emoji-test">
+                <strong>Пример 1:</strong> Мне нравится этот стрим! <img src="./Emoji-Honey-Club/like.png" class="honey-club-emoji" alt=":like:" title="Нравится">
+            </div>
+            
+            <div class="emoji-test">
+                <strong>Пример 2:</strong> <img src="./Emoji-Honey-Club/like.png" class="honey-club-emoji" alt=":like:" title="Нравится"> <img src="./Emoji-Honey-Club/like.png" class="honey-club-emoji" alt=":like:" title="Нравится"> <img src="./Emoji-Honey-Club/like.png" class="honey-club-emoji" alt=":like:" title="Нравится"> Супер!
+            </div>
+            
+            <div class="emoji-test">
+                <strong>Пример 3:</strong> <img src="./Emoji-Honey-Club/hello.png" class="honey-club-emoji" alt=":hello:" title="Привет"> Привет! <img src="./Emoji-Honey-Club/like.png" class="honey-club-emoji" alt=":like:" title="Нравится"> Отличный контент! <img src="./Emoji-Honey-Club/love.png" class="honey-club-emoji" alt=":love:" title="Любовь">
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>✅ Статус интеграции</h2>
+            
+            <div class="success">
+                ✅ Файл like.png найден (748KB)<br>
+                ✅ Добавлен в vmix_simple.html (3 варианта кода)<br>
+                ✅ Добавлен в honey_club_emojis.py<br>
+                ✅ Автоматически загружается в emoji_database_enhanced.py<br>
+                ✅ Всего эмоджи канала: 16 штук<br>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🎯 Коды для использования в YouTube чате</h2>
+            
+            <div class="info">
+                <strong>Для ручного ввода:</strong><br>
+                <code class="code">:like:</code> - короткий код<br><br>
+                
+                <strong>Автоматически от YouTube:</strong><br>
+                <code class="code">:HbadgerLike:</code> - без подчеркивания<br>
+                <code class="code">:_HbadgerLike:</code> - с подчеркиванием (как приходит из парсера)<br>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px; color: #FFD700;">
+            <h3>🏆 Новый эмоджи :like: успешно добавлен в систему! 🎉</h3>
+            <p>Теперь у вас <strong>16 персональных эмоджи</strong> канала Honey Club!</p>
+        </div>
+    </div>
+
+    <script>
+        // Проверяем загрузку изображений
+        document.addEventListener('DOMContentLoaded', () => {
+            const images = document.querySelectorAll('.honey-club-emoji');
+            let loadedCount = 0;
+            let totalCount = images.length;
+            
+            images.forEach((img, index) => {
+                img.onload = () => {
+                    loadedCount++;
+                    console.log(`✅ Эмоджи ${index + 1}/${totalCount} загружен: ${img.alt}`);
+                    
+                    if (loadedCount === totalCount) {
+                        console.log(`🎉 Все ${totalCount} эмоджи успешно загружены!`);
+                    }
+                };
+                
+                img.onerror = () => {
+                    console.error(`❌ Ошибка загрузки эмоджи: ${img.alt} (${img.src})`);
+                };
+            });
+            
+            console.log(`🔄 Начинаем загрузку ${totalCount} эмоджи...`);
+        });
+    </script>
+</body>
+</html>

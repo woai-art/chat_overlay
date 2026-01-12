@@ -50,7 +50,8 @@ class HoneyClubEmojis:
             'Zlost.png': ':Zlost:',
             'dislike.png': ':dislike:',
             'comeon.png': ':comeon:',
-            'hugs.png': ':hugs:'  # Если есть такой файл
+            'hugs.png': ':hugs:',  # Если есть такой файл
+            'like.png': ':like:'
         }
         
         # Проверяем какие файлы реально существуют
